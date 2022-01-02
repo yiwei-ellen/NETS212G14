@@ -1,0 +1,208 @@
+
+        .notification-site {
+            display: none;
+        }
+
+        li.notification-trigger {
+            transition: 0.3s
+        }
+
+        li.notification-trigger:hover {
+            cursor: pointer;
+        }
+
+        .notification-window {
+            position: fixed;
+            width: 25%;
+            height: 90%;
+            top: 60px;
+            left: 70%;
+            background-color: #fdfdfd;
+			box-shadow: 0 5px 5px rgba(0, 0, 0, .5);
+            border-radius: 10px;
+            flex-direction: column;
+            align-items: center;
+
+        }
+
+        .notification-header {
+            width: 100%;
+            height: 15%;
+        }
+
+        .notification-window hr {
+            width: 100%;
+            height: 1px;
+            margin: 3px 0;
+        }
+
+        .notification-main {
+            width: 100%;
+            height: 80%;
+            max-height: 80%;
+            overflow-y: scroll;
+        }
+
+        .notification-block {
+            width: 95%;
+            height: 26%;
+            margin: 0 auto;
+            padding: 0 5px;
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+			opacity: 0.8;
+			transition: 0.5s;
+        }
+		.notification-block:hover {
+			opacity: 1.0;
+		}
+
+        .notification-block>div:first-child>img {
+            flex: 1;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .notification-content.chatRequest {
+            width: 70%;
+            max-width: 70%;
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notification-content.friendRequest {
+            width: 70%;
+            max-width: 70%;
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notification-content-name {
+            overflow-x: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 60%;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .notification-content-msg-block {
+            flex: 2;
+            display: flex;
+            align-items: center
+        }
+
+        .notification-content-msg {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 0;
+        }
+
+        .notification-content-msg-date {
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+
+        .unseen-icon.seen {
+            display: none;
+        }
+
+        .unseen-icon {
+            margin-left: 5px;
+            border-radius: 50px;
+            width: 0.9em;
+            height: 0.9em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 4px rgba(0, 0, 0, .15);
+            text-align: center;
+			border:none;
+			color: #01FEFA
+        }
+
+        .break {
+            flex-basis: 100%;
+            height: 0;
+        }
+
+        .notification-button-menu.addressed {
+            display: none;
+        }
+
+        .notification-button-menu {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 25%;
+        }
+
+        .notification-button {
+            width: 50%;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, .5);
+            box-shadow: 0 1px 1px rgba(0, 0, 0, .15);
+            background-color: #0096F6;
+			color: white;
+			font-weight: bold;
+            opacity: 0.7;
+			border-radius: 3px;
+        }
+
+        .notification-button:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+		/* Remove the navbar's default margin-bottom and rounded borders */
+		.navbar {
+			margin-bottom: 0;
+			border-radius: 0;
+			height: 80px !important;
+		}
+
+		/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+		.row.content {
+			height: 700px
+		}
+
+		.navbar .navbar-brand img {
+			height: 40px;
+		}
+
+		/* Set gray background color and 100% height */
+		.sidenav {
+			padding-top: 20px;
+			background-color: #f1f1f1;
+			height: 100%;
+		}
+
+		.navbar-form {
+			vertical-align: middle;
+			height: 45px;
+		}
+
+		/* Set black background color, white text and some padding */
+		footer {
+			background-color: #555;
+			color: white;
+			padding: 15px;
+		}
+
+		/* On small screens, set height to 'auto' for sidenav and grid */
+		@media screen and (max-width: 767px) {
+			.sidenav {
+				height: auto;
+				padding: 15px;
+			}
+
+			.row.content {
+				height: auto;
+			}
+		}
