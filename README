@@ -10,7 +10,6 @@ Yuxuan (Michael) Gao - gaoyx
 
  2) Features Implemented
 
-We implemented all features required on the project handout. Specifically, we have:
 
 User Registration
 a. Signup with login name, password, first and last name, email address, an affiliation, a birthday, and at least 2 news categories.
@@ -80,57 +79,6 @@ e. Profile picture - generated on setup
 f. Comprehensive chat features - kick users, change chat name, no redundant chat room creation
 g. Sanitization - username, first name, and last name will need to be alphanumeric and appropriate during creation, otherwise, the user will be required to pick a new set of names
  
-
- 4) Source Files List
-
- /models
- 	ComputeRecLivy.java
- 	database.js
- 	RecJob.java
-	nets212-hw3-0.0.1-SNAPSHOT.jar
-	databaseTest.js
- /news_loader
- 	newsInvertedIndexLoader.js
- 	newsLoader.js
- 	nlp_en_stop_words.txt
-	.classpath
-	.gitignore
-	.project
- /public
-	/CSS
-		base.css
-		nav.css
-	/js
-		friendvisualizer.js
-		jit.js
-		notification.js
-	15 different owl pics
-	.DS_store
- /routes
-	routes.js
- /views
-	chat.ejs
-	friends.ejs
-	friendSearch.ejs
-	friendvisualizer.ejs
-	friendwall.ejs
-	login.ejs
-	main.ejs
-	news.ejs
-	ne0-p'wsSearch.ejs
-	ownwall.ejs
- 	profileupdate.ejs
-signup.ejs
-pom.xml
-package.json
-app.js
-README
-owl.png
-Package-lock.json
-AdsorptionBackup.zip
-/.settings
-.gitignore
-.project
 
 
  5) Integrity Declaration
