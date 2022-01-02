@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>News</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- navigation files -->
+  <link type="text/css" href="../css/nav.css" rel="stylesheet" />
+  <script language="javascript" type="text/javascript" src="../js/notification.js"></script>
+  <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+      height: 80px;
+    }
+
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {
+      height: 700px
+    }
+
+    .navbar .navbar-brand img {
+      height: 40px;
+    }
+
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+
+    .navbar-form {
+      vertical-align: middle;
+      height: 45px;
+    }
+
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+
+      .row.content {
+        height: auto;
+      }
+    }
+
+    .right-bck {
+      background-color: #ffffff
+    }
+
+    .registration-right {
+      width: 80%;
+      padding-top: 50px;
+      padding-bottom: 50px
+    }
+
+    .registration-right h2 {
+      color: #000000;
+      font-weight: 700;
+      padding-bottom: 20px
+    }
+
+    .registration .btn {
+      width: 100%
+    }
+
+    .fa,
+    .fas,
+    .fab {
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900
+    }
+
+    .far {
+      font-family: "Font Awesome 5 Free";
+      font-weight: 400
+    }
+
+    #event-list .card {
+      background-color: #ffffff;
+      padding: 18px;
+      margin-bottom: 3px
+    }
+
+    #event-list img {
+      width: 77px;
+      height: 77px
+    }
+
+    #event-list h4 {
+      color: #c0bfc9;
+      font-size: 16px
+    }
+
+    #event-list .card-title span {
+      padding-left: 5px;
+      padding-right: 20px;
+      font-size: 12px;
+      font-weight: 700
+    }
+
+    #event-list .card-text {
+      color: #000000;
+      font-weight: 700;
+      font-size: 16px
+    }
+
+    #event-list .card-body {
+      padding: 0 20px;
+      margin: 0 0 10px 0
+    }
+
+    #event-list .card-title svg {
+      color: #000000
+    }
+
+    .buttonload {
+      background-color: #04AA6D;
+      /* Green background */
+      border: none;
+      /* Remove borders */
+      color: white;
+      /* White text */
+      padding: 12px 16px;
+      /* Some padding */
+      font-size: 16px
+        /* Set a font size */
+    }
+
+    .fa-caret-right::before {
+      content: none
+    }
+
+
+    .fa,
+    .fas,
+    .fab {
+      font-family: FontAwesome
+    }
+
+    .likeButton {
+      display: none
+    }
+
+    .unlikeButton {
+      display: none
+    }
+  </style>
+  <script type="text/javascript">
+    var newsids = []
+    var numLikes = {}
+    var oldestCursor
+    var requestedFlag = false
+    var json
+    //get current unix timestamp
+    var offset = 126489600
+    var now = String(new Date().getTime() / 1000);
+    var timeStampConvert = function (ts) {
+
+      //get full timeStamp
+      dt = new Date()
+      var date = new Date(ts * 1000 - dt.getTimezoneOffset() * 60 * 1000 + offset * 1000);
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+      var hours = date.getHours();
+      var minutes = date.getMinutes();
+      if (hours > 12) {
+        hours -= 12;
+        ampm = "PM";
+      } else {
+        ampm = "AM";
+      }
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      hours = hours == 0 ? 12 : hours;
+      var time = hours + ":" + minutes + " " + ampm;
+      return day + "/" + month + "/" + year + " " + time;
+    }
+    var addLikesFunctionality = function (newsid) {
+      $.post("/news/likes/present", { newsid: newsid }).complete(function (data, status) {
+        liked = JSON.parse(data.responseText)
+        if (liked) {
+          $("#unlikebutton" + newsid).toggle()
+        } else {
+          $("#likebutton" + newsid).toggle()
+        }
+        $.post("/news/likes/getNumber", { newsid: newsid }).complete(function (data, status) {
+          json = JSON.parse(data.responseText);
+          numLikes[newsid] = parseInt(json)
+          $("#likes" + newsid).html(json)
+
+          $("#likebutton" + newsid).click(function () {
+            $.post("/news/likes/add", { newsid: newsid }).complete(function (data, status) {
+              $("#likes" + newsid).html(numLikes[newsid] + 1)
+              numLikes[newsid] += 1
+              $("#likebutton" + newsid).toggle()
+              $("#unlikebutton" + newsid).toggle()
+            }).fail(function () {
+              console.log('error');
+            });
+          });
+
+          $("#unlikebutton" + newsid).click(function () {
+            $.post("/news/likes/remove", { newsid: newsid }).complete(function (data, status) {
+              $("#likes" + newsid).html(numLikes[newsid] - 1)
+              numLikes[newsid] -= 1
+              $("#likebutton" + newsid).toggle()
+              $("#unlikebutton" + newsid).toggle()
+            }).fail(function () {
+              console.log('error');
+            });
+          });
+
+        }).fail(function () {
+          console.log('error');
+        });
+      }).fail(function () {
+        console.log('error')
+      })
+    }
+
+    //Ajax function to get newsfeed for current time, grabs 25 items
+    var getFeed = function (ts) {
+      $.post("/news/getFeed", { ts: String(ts), n: '25' }).complete(function (data, status) {
+        if (status == "success") {
+          json = JSON.parse(data.responseText);
+          //sort json based on tsunix
+          json.sort(function (a, b) {
+            return b.tsunix.N - a.tsunix.N;
+          });
+          for (var i = 0; i < json.length; i++) {
+            newsids.push(json[i].newsid.S);
+            //update oldestCursor if given item is older than current oldestCursor
+            if (oldestCursor == null || oldestCursor > json[i].tsunix.N) {
+              oldestCursor = json[i].tsunix.N;
+            }
+
+            //add to events div
+            $("#event-list").append(
+              `<div class="card flex-row">
+                        <div class="card-body">
+                            <h4 class="card-title h5 h4-sm">
+                            	<i class="fas fa-caret-right" aria-hidden="true">
+                            	</i><span>` + timeStampConvert(json[i].tsunix.N) + `</span>
+                            	<i class="fas fa-caret-right" aria-hidden="true">
+                            	</i><span>` + json[i].category.S + `</span>
+                            </h4>
+                            <p class="card-text">` + json[i].authors.S + `</p>
+                            <p class="card-text"><a target="_blank" 
+                            href=`+ json[i].link.S + ">" + json[i].headline.S + `</a></p>
+                            <div class="w3-col m4 w3-hide-small">
+							   <p><span class="w3-padding-large w3-right"><b>Likes </b> <span class="w3-tag" class = "likes"
+							   id = "likes`+ json[i].newsid.S + `"> </span>
+							   <button type="button" class="btn btn-default btn-sm likeButton" id="likebutton` + json[i].newsid.S + `">
+							   <span class="glyphicon glyphicon-thumbs-up"></span>
+							   </button>
+							   <button type="button" class="btn btn-primary btn-sm unlikeButton" id="unlikebutton` + json[i].newsid.S + `">
+							   <span class="glyphicon glyphicon-thumbs-up"></span>
+							   </button>
+							   </span></p>
+							</div>
+                        </div>
+              </div>`
+            )
+            addLikesFunctionality(json[i].newsid.S)
+
+          }
+          requestedFlag = false;
+        }
+      }).fail(function () {
+        console.log('error');
+      });
+    };
+    //infinite scroll function
+    $(window).on("scroll", function () {
+      //page height
+      var scrollHeight = $(document).height();
+      //scroll position
+      var scrollPos = $(window).height() + $(window).scrollTop();
+      // fire if the scroll position is 25 pixels above the bottom of the page
+      if (((scrollHeight - 25) >= scrollPos) / scrollHeight == 0) {
+        $('#load-more').click();
+      }
+    });
+    //function to get newsfeed on load
+    $(document).ready(function () {
+      oldestCursor = now - offset
+      getFeed(now - offset);
+
+      $("#load-more").click(function () {
+        if (requestedFlag == false) {
+          requestedFlag = true
+          getFeed(oldestCursor);
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+
+
+  <nav class="navbar  class=" navbar navbar-light" style="background-color: #e3f2fd;">
+    <div class="container-fluid">
+      <a href="/main" class="navbar-brand">
+        <img src="../owl.png">
+      </a>
+      <ul class="nav navbar-nav navbar-right" style="margin-top:20px;">
+        <li><a href="/main"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+        <li><a href="/friends"><span class="glyphicon glyphicon-heart"></span>Friends</a></li>
+        <li><a href="/chat"><span class="glyphicon glyphicon-comment"></span>Chats</a></li>
+        <li><a href="/news"><span class="glyphicon glyphicon-blackboard"></span>News</a></li>
+        <li><a href="/userdetails"><span class="glyphicon glyphicon-user"></span>Profile</a></li>
+        <li class="notification-trigger"><a><span class="glyphicon glyphicon-bell"></span>Notification</a> </li>
+        <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid text-center">
+    <div class="row content">
+      <div class="col-sm-2 text-left">
+      </div>
+      <div class="col-sm-8 text-left">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12 d-flex justify-content-center right-bck">
+              <div class="registration-right">
+                <h2>Our News</h2>
+                <hr>
+                <div id="event-list">
+
+                </div>
+              </div>
+            </div>
+            <button class="buttonload" id="load-more">
+              <i class="fa fa-refresh fa-spin"></i> Loading More News
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="notification-site">
+    <div class="notification-window">
+      <div class="notification-header">
+        <h1> Notifications</h1>
+        <!--Can add read and unread if have time-->
+      </div>
+      <hr>
+      <div class="notification-main">
+      </div>
+    </div>
+  </div>
+
+
+
+</body>
+
+</html>

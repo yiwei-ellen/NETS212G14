@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat</title>
+    <meta charset="utf-8">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://kit.fontawesome.com/e45f906fd6.js" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- navigation files -->
+    <link type="text/css" href="../css/nav.css" rel="stylesheet" />
+    <style>
+        .break {
+            flex-basis: 100%;
+            height: 0;
+        }
+
+
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            font-family: sans-serif;
+            color: black;
+            background: #fafafa;
+            height: 100%;
+            width: 100%;
+            max-height: 100%;
+        }
+
+        .app {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            max-height: 100%;
+        }
+
+        /*CSS for left-app, which contains a list of all rooms available to the user*/
+        .left-app {
+            margin: 0 auto;
+            background: #ffffff;
+            flex: 1;
+            max-width: 30%;
+            overflow: auto;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 5px 5px rgba(0, 0, 0, .5)
+        }
+
+        .chat-menu-container {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+        }
+
+        .add-chat-button {
+            width: 100%;
+            flex: 1;
+            color: #ffffff;
+            background: #0083fe;
+            text-align: center;
+            font-size: 40px;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: 0.5s
+        }
+
+        .add-chat-button:hover {
+            opacity: 1
+        }
+
+        .room-menu-container {
+            width: 100%;
+            height: 90%;
+        }
+
+        .session-block {
+            background: #FFFFFF;
+            display: flex;
+            align-items: center;
+            margin-left: 5px;
+            margin-right: 5px;
+            padding: 10px 5px;
+            position: relative;
+            transition: 0.5s;
+            opacity: 0.7;
+            border-top: solid #f2f2f2 1px;
+        }
+
+        .session-block:hover {
+            opacity: 1;
+            background: #f8f4f4;
+            cursor: pointer;
+        }
+
+        .session-block>div:first-child>img {
+            flex: 1;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .session-content {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-button {
+            width: 15%;
+            opacity: 0.5;
+            transition: 0.1s;
+        }
+
+        .chat-button:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .delete-button {
+            width: 15%;
+            opacity: 0.5;
+            transition: 0.1s;
+        }
+
+        .delete-button:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .session-content-name {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .friend-content-name {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .session-content-msg-block {
+            flex: 2;
+            display: flex;
+            align-items: center
+        }
+
+        .session-content-msg {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 0;
+        }
+
+        .session-content-msg-date {
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+
+        /*CSS for friend invite session and friend blocks. Similar functions to session block*/
+        .friend-block {
+            background: darksalmon;
+            display: flex;
+            align-items: center;
+            margin-right: 5px;
+            padding: 3px 3px;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .friend-block>div:first-child>img {
+            flex: 1;
+            width: 50px;
+            height: 50px;
+            border-radius: 45%;
+            margin-right: 8px
+        }
+
+        .friend-content {
+            width: 40%;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /*CSS for mid-app, which is where the main chat interface locates*/
+        .mid-app {
+
+            max-width: 69%;
+            margin: 0 auto;
+            flex: 2;
+            height: 100%;
+            background-color: #ffffff;
+            border: 1px solid #898989;
+            max-height: 100%;
+            box-shadow: 0 5px 5px rgba(0, 0, 0, .5)
+        }
+
+        .left-app {
+            max-height: 100%;
+        }
+
+        .app {
+            height: 87%;
+        }
+
+        .header-area {
+            height: 15%;
+            width: 100%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid black;
+        }
+
+        /* Some CSS for the change-chatname section*/
+        .chatname-block {
+
+            padding: 1px 5px;
+            max-height: 100%;
+            width: 85%;
+            background: #ffffff;
+            font-size: 40px;
+        }
+
+        .chatname {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .option-place {
+            width: 15%;
+            display: relative;
+        }
+
+        .session-options-circle {
+            height: 50px;
+            width: 50px;
+            float: right;
+            margin-right: 5px;
+            background: grey;
+            text-align: center;
+            vertical-align: middle;
+            border-radius: 50px;
+            transition: 400ms;
+            color: #ffffff;
+
+        }
+
+        /*Define the option button on the top right and also the components in right app*/
+        .session-options-circle:hover {
+            background-color: #0096F6;
+            cursor: pointer;
+        }
+
+        .session-options-menu::before {
+            content: "";
+            position: absolute;
+            top: 0px;
+            right: 40%;
+            width: 20px;
+            height: 20px;
+            background: blue;
+            transform: rotate(45deg);
+        }
+
+        .session-options-menu-container {
+            position: relative;
+            top: -40px;
+            left: 275px;
+        }
+
+        .session-options-menu {
+            z-index: 2;
+            position: absolute;
+            text-align: left;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            top: 70px;
+            right: 53px;
+            background: #ffffff;
+            width: 100px;
+            box-sizing: 0 5px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            transition: 0.5s;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .option-list {
+            position: relative;
+            margin-top: 50px;
+            padding: 0 0;
+            width: 100%;
+        }
+
+        .friends-list {
+            display: none;
+            padding: 0 0;
+            max-height: 100px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .option-list .option {
+            border-top: 1px solid #f2f2f2;
+            transition: 0.5s;
+        }
+
+        .option-list .option:hover {
+            background-color: #0096F6;
+            color: #ffffff
+        }
+
+        .option {
+            padding: 5px 0;
+            font-size: 30px;
+            text-align: center;
+            transition: 0.1s;
+            opacity: 0.7;
+        }
+
+        .option:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        i {
+            padding: 1px;
+        }
+
+
+
+
+
+        /*More CSS for the mid-app, including input area, the submit button, and the message block in the middle*/
+        #input-area {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            align-items: right;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            flex: 1;
+        }
+
+        .input-box {
+            flex: 3;
+            display: flex;
+            background-color: #fff;
+            outline: none;
+            border-radius: 15px;
+            border: none;
+            height: 25px;
+            width: 70%;
+        }
+
+        #send-btn {
+            padding-top: 1px;
+            background-color: #0083fe;
+            border: none;
+            color: white;
+            border-radius: 50%;
+            transition: 0.1s;
+            opacity: 0.7
+        }
+
+        #send-btn:hover {
+            opacity: 1
+        }
+
+        #input {
+            border: none !important;
+            border-radius: 15px;
+            height: 23px;
+            font-size: 14px;
+            width: 90%;
+            margin-left: 5px;
+        }
+
+        .username {
+            position: absolute;
+            left: 40px;
+            bottom: 0px;
+            font-size: x-small;
+        }
+
+        .msg-time {
+            position: absolute;
+            left: 400px;
+            bottom: 0px;
+            font-size: x-small;
+        }
+
+        .msg-time-sender {
+            position: absolute;
+            left: 815px;
+            font-size: x-small
+        }
+
+        .msgs-received {
+            display: flex;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .msgs-received>div:first-child {
+            margin: auto 5px 0 0;
+        }
+
+        .msgs-received>div.msgs-block {
+            flex-grow: 1;
+            margin-bottom: 10px;
+        }
+
+        .msgs-sent>div.msgs-block {
+            margin-bottom: 10px;
+        }
+
+        .msgs-received>div:first-child>img {
+            border-radius: 50%;
+            height: 25px;
+            width: 25px;
+        }
+
+        .msg-received {
+            max-width: 75%;
+            margin: 2px 0;
+            display: flex;
+        }
+
+        .msg-received:first-child>.msg-received-text {
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .msg-received:last-child>.msg-received-text {
+            border-bottom-right-radius: 20px;
+        }
+
+        .msg-sent:first-child>.msg-sent-text {
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px
+        }
+
+        .msg-sent:last-child>.msg-sent-text {
+            border-bottom-left-radius: 20px;
+        }
+
+        .msg-received-text {
+            padding: 10px;
+            min-height: 20px;
+            background: #e4e6ea;
+            border-radius: 4.5px;
+        }
+
+        .msgs-sent {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: right;
+            position: relative;
+        }
+
+        .msg-sent {
+            max-width: 75%;
+            display: flex;
+            margin: 2px 0 2px auto;
+        }
+
+        .msg-sent-text {
+            color: white;
+            background: #0083fe;
+            border-radius: 4.5px;
+            padding: 10px;
+            min-height: 20px;
+            margin-left: auto;
+        }
+
+        .msg-area {
+            max-height: 80%;
+            height: 80%;
+            overflow-y: scroll;
+        }
+
+        .right-app {
+            display: none;
+            width: 20%;
+            background: #ffffff;
+            box-shadow: 0 5px 5px rgba(0, 0, 0, .5)
+        }
+
+        /*CSS for the window of changing chatname*/
+        .change-chatname-window {
+            display: none;
+            position: fixed;
+            width: 47%;
+            height: 10%;
+            top: 50%;
+            left: 50%;
+            z-index: 10;
+            border: 1px solid #898989;
+            border-radius: 10px;
+            box-shadow: 0 5px 5px rgba(0, 0, 0, .5);
+            background: #ffffff;
+            transform: translate(-50%, -50%);
+        }
+
+        .change-chatname-container {
+            display: flex;
+            align-items: center;
+        }
+
+        label {
+            margin-left: 10px;
+            margin-top: 0px;
+        }
+
+        input#cchatname {
+            margin-top: 0px;
+            width: 45%;
+            color: black;
+        }
+
+        .chatname-submit-button {
+            margin-left: 30px;
+            background-color: #0083fe;
+            height: 65px;
+            text-align: center;
+            border-radius: 10px;
+            opacity: 0.7;
+            transition: 0.5s
+        }
+
+        .chatname-submit-button:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .chatname-submit-icon {
+            margin-left: 15px;
+            margin-right: 15px;
+            margin-top: 15px;
+        }
+
+        /* More CSS for friend-invite window*/
+        .friends-invite-request-window {
+            display: none;
+            position: fixed;
+            width: 30%;
+            height: 70%;
+            top: 50%;
+            left: 50%;
+            max-width: 80%;
+            z-index: 10;
+            border: 1px solid #898989;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 5px 5px rgba(0, 0, 0, .5);
+            transform: translate(-50%, -50%);
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .friend-invite-header {
+            max-height: 15%;
+            width: 100%;
+            border-bottom: solid 1px #898989;
+            text-align: center;
+            font-size: 35px;
+            font-weight: bold;
+            padding-top: 14px;
+        }
+
+
+        .friend-invite-list {
+            width: 100%;
+            height: 75%;
+        }
+
+        .friend-invite-ulist {
+            list-style: none;
+            padding: 0px;
+            margin: 0;
+            overflow-y: auto;
+            overflow-x: hide;
+            height: 100%;
+        }
+
+        .friend-invite {
+            margin: 1px 5px;
+            transition: 0.5s;
+            opacity: 0.7
+        }
+
+        .friend-invite:hover {
+            opacity: 0.9;
+        }
+
+        .friend-invite.checked {
+            opacity: 1;
+        }
+
+        .friend-invite-select {
+            left: 100px;
+            flex: 1;
+        }
+
+        .friend-invite-bottom {
+            height: 10%;
+            margin-top: 2px;
+            width: 100%;
+            text-align: center;
+            background: #0083fe;
+            color: white;
+            padding: 5px 0;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            opacity: 0.7;
+            transition: 0.5s;
+        }
+
+        .friend-invite-bottom:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        /*Overlay such that if friend-invite or change-name is displayed. All others will be overlayed*/
+        #overlay {
+            position: fixed;
+            opacity: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, .5);
+            pointer-events: none;
+        }
+
+        #overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+    </style>
+    <script>
+        // init script to populate the chat session
+        var friendlistIsProcessed = false;
+        var currentChatid = '';
+        var currentTsunix;
+        var chatsessions = [];
+
+        /* A main method that, when called, will reload the session
+        It will not display the mid-app and right-app
+        It will then re-get all the sessions available on dynamodb and populate it
+        It will then join all rthe room it gets
+        */
+        var loadSessions = function () {
+            // Clearing all the sections for re-display
+            $('.room-menu-container').empty();
+            $('.mid-app').hide();
+            $('.right-app').hide();
+
+            // Getting the sessions from db
+            $.getJSON('/getchatsessions', function (elements) {
+                // Sort in decending order
+                elements.sort((a, b) => {
+                    return b.tsunix.N - a.tsunix.N;
+                });
+                chatsessions = [];
+                for (var i = 0; i < elements.length; i++) {
+                    chatsessions.push(elements[i]);
+                }
+                // Join chat for all by first checking if we are able to join
+                $.post('/joinchats', { rooms: chatsessions }, function (data) {
+
+                    // If we are able to join. We will join it
+                    if (data.success) {
+                        joinChats(chatsessions);
+                    }
+                    return true;
+                });
+            });
+
+        };
+
+        // Starting method
+        $(document).ready(function () {
+            loadSessions();
+        })
+
+        /* A helper function that will add the session block to the left-app
+        given the element of the chat, the recent message, creatorname, and creatorid
+        */
+        var addSessionToLeft = function (element, message, creatorname, creatorid) {
+            var newChatBlock;
+            if (message != null) {
+                newChatBlock = createNewChatBlock(element.chatid.S, element.tsunix.N, element.name.S, message, creatorname, creatorid,);
+            } else {
+                newChatBlock = createNewChatBlock(element.chatid.S, element.tsunix.N, element.name.S, "", "", "");
+            }
+            $('.room-menu-container').append(newChatBlock);
+            addEventToSession(element.chatid.S);
+        }
+
+        /* A method that, given the rooms, will first get their most recent message
+        It will then either add it to left or don't do anything, depending on the state of the message (null, or not)
+        Then it will join the chat through socket
+        */
+        var joinChats = function (rooms) {
+            var msgids = chatsessions.filter(obj => { return obj.messageid != null }).map(session => {
+                return session.messageid.S;
+            });
+            // Get the most recent message by the id given in each chatid in db.
+            $.getJSON('/chat/getchatmessagebyid', { messageids: msgids }, function (data) {
+                for (var i = 0; i < rooms.length; i++) {
+                    var message = data.filter(obj => { return obj.chatid.S == rooms[i].chatid.S })[0];
+
+                    // Will add the message to the left-app if possible
+                    if (message != null) {
+                        addSessionToLeft(rooms[i], message.content.S, message.creatorname.S, message.creator.S);
+                    } else {
+                        addSessionToLeft(rooms[i], null, null, null);
+                    }
+
+                    // Call on join Chat method to take care of socket
+                    joinChat(userid, rooms[i].chatid.S, false);
+                }
+            });
+        }
+
+
+        /* A helper method that will create the session block for the left-app given the information
+        */
+        var createNewChatBlock = function (chatid, tsunix, chatname, chatmessage, creatorname, creatorid) {
+            var newBlockTemplate = "<div class='session-block' id=!Replace-chat-id!><div><img src='../owl.png' /></div>"
+                + "<div class='session-content'><div class='session-content-name'>!Replace-chatname!</div>"
+                + "<div class='session-content-msg-block'><div class='session-content-msg'>!Replace-chat-message!</div>"
+                + "<div class='session-content-msg-date'>!Replace-Time!</div></div></div></div>"
+            var block = newBlockTemplate.replaceAll('!Replace-chat-id!', chatid);
+
+            block = block.replace("!Replace-chatname!", chatname);
+            block = block.replace('!Replace-Time!', timeStampConvert(tsunix))// Will change to reflect the real time
+            if (creatorid != userid) {
+                chatmessage = creatorname + ": " + chatmessage;
+            } else {
+                chatmessage = "You: " + chatmessage;
+            }
+            block = block.replace('!Replace-chat-message!', chatmessage);
+            return block;
+        }
+
+        /*
+        A method that will display the mid-app
+        It will first detect if a switch of the mid-app content is necessary.
+        If it is, it will erase everything on mid-app and populate with the information from new chat session
+        */
+        var processSession = function (chatid) {
+
+            // If a switch is necessary. Lazy approach
+            if (currentChatid != chatid) {
+
+                $('#' + chatid + ".session-block").css("background-color", "#f8f4f4");
+                if (currentChatid != '') {
+                    $('#' + currentChatid + ".session-block").css("background-color", "#ffffff");
+                }
+                var msgArea = document.getElementsByClassName('msg-area')[0];
+                while (msgArea.firstChild != null) {
+                    msgArea.removeChild(msgArea.firstChild);
+                }
+                loadSession(chatid);
+                currentChatid = chatid;
+                currentTsunix = chatsessions.filter(obj => { return obj.chatid.S == chatid })[0].tsunix.N;
+                noMoreMessage = false;
+
+                // Redo the friend list
+                friendlistIsProcessed = false;
+                $('.mid-app').show('slow');
+                $('.right-app').hide();
+                $('.friends-list').hide();
+            }
+        }
+        var addEventToSession = function (chatid) {
+            // Remove all children node in message area
+
+            // Load the session in msgarea
+            $('#' + chatid + ".session-block").click(function (e) {
+                processSession(chatid);
+            })
+        }
+
+
+    </script>
+    <script>
+        var userid = '<%=userid%>';
+        var userlist = [];
+        var useridlist = [];
+        var picturelist = [];
+        var numOfUser = 0;
+        var noMoreMessage = false;
+        var messageList = [];
+
+        var loadFriendList = function (chatid) {
+
+            //var friendListInChat = chatsessions.filter(obj => { return obj.chatid.S == chatid })[0].userids.SS;
+            for (var i = 0; i < userlist.length; i++) {
+                var cUser = userlist[i];
+                if (cUser.userid.S != userid) {
+                    var newBlockTemplate = "<li id= !Replace-user-id!><div class='friend-block'><div><img src='!Replace-picture!' /></div>"
+                        + "<div class='friend-content'><div class='friend-content-name'>!Replace-username!</div></div>"
+                        + "<div class='chat-button'><i class='far fa-comment-dots fa-2x'></i></div>"
+                        + "<div class='delete-button'><i class='fas fa-times fa-2x'></i></div></div></li>";
+                    var block = newBlockTemplate.replace('!Replace-user-id!', cUser.userid.S);
+                    var picture = "../owl.png";
+                    if (cUser.picture != undefined && parseInt(cUser.picture.S) >= 0 && parseInt(cUser.picture.S)) {
+                        picture = "../owl" + cUser.picture.S + ".png";
+                    }
+                    block = block.replace('!Replace-picture!', picture);
+                    block = block.replace('!Replace-username!', cUser.username.S);
+                    $(".friends-list").append(block);
+                }
+            }
+            $('.friends-list').find(".chat-button").each(function () {
+                this.addEventListener("click", function (e) {
+                    findChatSession($(e.target).closest('li')[0].id);
+                });
+            })
+            $('.friends-list').find(".delete-button").each(function () {
+                this.addEventListener("click", function (e) {
+                    kickUser($(e.target).closest('li')[0].id, currentChatid);
+                });
+            })
+        }
+
+        var loadUsers = function (chatid) {
+            // Get the picture and the userid of each users in the chat
+            userlist = [];
+            $.getJSON('/getchatusers/' + encodeURIComponent(chatid), function (elements) {
+                for (var i = 0; i < elements.length; i++) {
+                    useridlist.push(i);
+                    userlist.push(elements[i]);
+                }
+                loadinitMessages(chatid);
+            });
+        }
+
+        var pageList = [];
+        var loadSession = function (chatid) {
+            loadUsers(chatid);
+
+        }
+
+        var loadinitMessages = function (chatid) {
+            var locatedChatSession = chatsessions.filter(obj => { return obj.chatid.S == chatid })[0];
+            if (locatedChatSession != null) {
+                loadMessages(chatid, locatedChatSession.tsunix.N + 1); // Plus one because of how db is called.
+            } else {
+                alert("Please refresh");
+            }
+        }
+        var loadMessages = function (chatid, tsunix) {
+            if (!noMoreMessage) {
+                $.getJSON('/getchatmessages/' + encodeURIComponent(chatid) + "/" + tsunix, function (elements) {
+                    // Descending order and appending upwards.
+                    // Sort out the difference of array that are in elements but not in messageList
+                    var difference = elements.filter(obj => {
+                        return !messageList.includes(obj.messageID);
+                    });
+                    //$.grep(elements, (item) => $.inArray(item, messageList) === -1);
+                    if (difference.length == 0) {
+                        noMoreMessage = true;
+                    } else {
+                        // Descending order
+                        difference.sort((a, b) => {
+                            return b.tsunix.N - a.tsunix.N;
+                        });
+                        for (let i = 0; i < difference.length; i++) {
+                            addMessage(difference[i].creator.S, difference[i].content.S, difference[i].tsunix.N, difference[i].messageid.S, true);
+                        }
+                        currentTsunix = difference[difference.length - 1].tsunix.N;
+                        difference = difference.map(obj => {
+                            return obj.messageid.S;
+                        });
+                        messageList = difference.concat(messageList);
+                    }
+                });
+            }
+        }
+
+        // A method (untested) that can generate new div block.
+        var addMessage = function (creator, message, tsunix, messageID, toTop) {
+
+            // Dmessage > dmsgsblock > dmsg > dmsgtxt
+            var dmessage = document.createElement("div");
+            dmessage.name = creator;
+
+            // dmsg is the actual msg
+            var dmsg = document.createElement("div");
+            dmsg.id = messageID;
+            var dmsgtxt = document.createElement("div");
+            var isSent = false;
+            if (creator != userid) {
+                // Need to adjust class for dmessage, dmsg, dmsgtxt
+                // Need to add image
+                dmessage.className = "msgs-received";
+                dmsg.className = "msg-received";
+                dmsgtxt.className = "msg-received-text";
+                // Add the image if the creator is not the user
+                var dimage = document.createElement("div");
+                var image = document.createElement("img");
+                // Error at this message
+                var picture;
+                var us = userlist.filter(x => { return x.userid.S == creator });
+                if (us.length > 0 && us[0].picture != undefined && parseInt(us[0].picture.S) >= 0 && parseInt(us[0].picture.S) <= 14) {
+                    picture = "../owl" + us[0].picture.S + ".png";
+                } else {
+                    picture = "../owl.png";
+                }
+                image.src = picture;
+                dimage.appendChild(image);
+                dmessage.appendChild(dimage);
+            } else {
+                dmessage.className = "msgs-sent";
+                dmsg.className = "msg-sent";
+                dmsgtxt.className = "msg-sent-text";
+                isSent = true;
+            }
+            var content = document.createTextNode(message);
+            dmsgtxt.appendChild(content);
+            dmsg.appendChild(dmsgtxt);
+            var dmsgsblock;
+
+            if (toTop) {
+                // Firstchild of app is a dmessage
+                var firstChild = $('.msg-area')[0].firstChild;
+                // Situation:
+                /*
+                1. There is a first child
+                    1.1 if creator of that child is the same as creator of this node
+                    1.2 If creator of that child is not the same
+                2. There is no child before (no child situation)
+                */
+                if (firstChild == null || firstChild.id != creator) {
+                    dmsgsblock = document.createElement("div");
+                    dmsgsblock.className = "msgs-block";
+                    dmessage.id = creator;
+                    dmsgsblock.append(dmsg);
+                    dmessage.appendChild(dmsgsblock);
+                    if (firstChild == null) {
+                        $('.msg-area').get(0).appendChild(dmessage);
+                    } else {
+                        $('.msg-area').get(0).insertBefore(dmessage, firstChild);
+                    }
+                    var divTime = document.createElement('div');
+                    divTime.className = "msg-time"
+                    if (creator != userid) {
+                        var divName = document.createElement('div');
+                        divName.className = 'username';
+                        var cn = '';
+                        for (var i = 0; i < userlist.length; i++) {
+                            if (userlist[i].userid.S == creator) {
+                                cn = userlist[i].username.S;
+                            }
+                        }
+                        var nameContent = document.createTextNode(cn);
+                        divName.appendChild(nameContent);
+                        dmessage.appendChild(divName);
+                    }
+                    var timeContent = document.createTextNode(timeStampConvert(tsunix));
+                    divTime.append(timeContent);
+                    dmessage.appendChild(divTime);
+                } else {
+                    dmsgsblock = firstChild.childNodes[0];
+                    if (firstChild.childNodes.length == 4) {
+                        dmsgsblock = firstChild.childNodes[1];
+                    }
+                    dmsgsblock.insertBefore(dmsg, dmsgsblock.firstChild);
+                    firstChild.lastChild.textContent = timeStampConvert(tsunix);
+                }
+            } else {
+                /*
+                1. If lastChild is empty
+                2. If lastChild is not empty
+                    2.1 if creator of the last Child is the same as creator
+                    2.2 If creator of the last child is not the same as this creator
+                */
+                var lastChild = $(".msg-area")[0].lastChild;
+                if (lastChild == null || lastChild.id != creator) {
+                    dmsgsblock = document.createElement("div");
+                    dmsgsblock.className = "msgs-block";
+                    dmessage.id = creator;
+                    dmsgsblock.append(dmsg);
+                    dmessage.appendChild(dmsgsblock);
+                    $('.msg-area').get(0).appendChild(dmessage);
+                    var divTime = document.createElement('div');
+                    divTime.className = "msg-time"
+                    if (creator != userid) {
+                        var divName = document.createElement('div');
+                        divName.className = 'username';
+                        var cn = '';
+                        for (var i = 0; i < userlist.length; i++) {
+                            if (userlist[i].userid.S == creator) {
+                                cn = userlist[i].username.S;
+                            }
+                        }
+                        var nameContent = document.createTextNode(cn);
+                        divName.appendChild(nameContent);
+                        dmessage.appendChild(divName);
+                    }
+                    var timeContent = document.createTextNode(timeStampConvert(tsunix));
+                    divTime.append(timeContent);
+                    dmessage.appendChild(divTime);
+                } else {
+                    dmsgsblock = lastChild.childNodes[0];
+                    if (lastChild.childNodes.length == 4) {
+                        dmsgsblock = lastChild.childNodes[1];
+                    }
+                    dmsgsblock.appendChild(dmsg);
+                    lastChild.lastChild.textContent = timeStampConvert(tsunix);
+                }
+                dmsg.scrollIntoView();
+            }
+        }
+
+    </script>
+    <script type="text/javascript">
+        var socket = io('http://localhost:8080');
+
+        function leaveChat(sender) {
+            // No other user in the session
+            if ($(".friends-list").find('li').length == 0) {
+                deleteChat(currentChatid, [userid]);
+            } else {
+                kickUser(userid, currentChatid);
+            }
+        }
+
+        var joinChat = function (userid, room, emit) {
+            socket.emit('join room', { sender: userid, room: room, tsunix: Date.now(), emit: emit });
+        }
+
+        function createChat(sender, members, membersToAdd) {
+            var msg = {
+                sender: sender,
+                tsunix: Date.now()
+            };
+            msg.members = membersToAdd;
+            if (members.length + membersToAdd.length == 2) {
+                msg.type = 0;
+            } else {
+                msg.type = 1;
+            }
+            $.post('/addchat', msg, function (element) {
+                loadSessions();
+                if (element != null) {
+                    socket.emit('join room', { sender: sender, room: element.chatid.S, tsunix: msg.tsunix });
+                    // Create chat here
+                    inviteChat(element.chatid.S, members)
+                } else {
+                    alert("Please refresh")
+                }
+            });
+        }
+
+        function sendChat() {
+            var input = $.trim($('#input').val());
+            if (input !== '') {
+                var messageToSend = { text: input, sender: userid, tsunix: Date.now(), room: currentChatid };
+                $.post('/sendchatmessage', messageToSend, function (data) {
+                    if (data != null) {
+                        messageToSend.messageID = data.messageID;
+                        socket.emit('chat message', messageToSend);
+                    }
+                });
+                $('#input').val('');
+                $('#input').focus();
+            }
+        }
+
+        $(document).keypress(function (e) {
+            if (e.keyCode == 13 && $('.mid-app').is(':visible')) {
+                sendChat();
+            }
+        })
+
+        function kickUser(deleteUserId, chatid) {
+            var msg = {
+                sender: userid,
+                room: chatid,
+                tsunix: Date.now(),
+                userToDelete: deleteUserId,
+            };
+            $.post('/chat/kickuser', msg, function (data) {
+                if (deleteUserId == userid) {
+                    $('.mid-app').hide();
+                    $('.right-app').hide();
+                }
+                if (data != null) {
+                    socket.emit('kick user', msg);
+                }
+            });
+        }
+
+        function deleteChat(chatid, userlist) {
+
+            $.post('/chat/delete', { chatid: chatid, userid: userid, members: userlist }, function (data) {
+                if (data != null) {
+                    socket.emit('delete room', {
+                        room: chatid,
+                        sender: userid,
+                        tsunix: Date.now(),
+                        userlist: userlist
+                    });
+                    $('.mid-app').hide();
+                    $('.right-app').hide();
+                    $('.left-app').find('#' + chatid).remove();
+                }
+            });
+        }
+
+        function inviteChat(chatid, userlist) {
+            //Send invite here
+            const promises = userlist.map(user => {
+                return new Promise((resolve, reject) => {
+                    $.post('/chat/invite', { receiverid: user, chatid: chatid }, function (data) {
+
+                        if (data != null) {
+                            resolve(data);
+                        } else {
+                            reject(data);
+                        }
+                    })
+                });
+            });
+            Promise.all(promises).then(resolves => {
+            });
+        }
+
+        /*
+        A method that will first find if there is a common chat between the two
+        If it found, 
+        */
+        function findChatSession(neighborid) {
+            $.getJSON('/findchat/' + neighborid, function (elements) { // Element is the user's chatid
+                if (elements == null) {
+                    // Do nothing. An error may occur
+                    alert("An error occur. Please refresh");
+                } else {
+                    // Locate any session that the user and the neighbor are both in with 2 people
+                    var locatedSessions = chatsessions.filter(obj => {
+                        return elements.includes(obj.chatid.S) && obj.type.N == 0;
+                    });
+                    if (locatedSessions.length > 0) {
+                        //Move the focus on the left to that node and
+                        // Open the chat on that
+                        var locatedChatid = locatedSessions[0].chatid.S;
+                        processSession(locatedChatid);
+                    } else {
+                        createChat(userid, [neighborid], [userid]);
+                    }
+                }
+            })
+        }
+
+        /*
+        A helper function that remove the room
+        */
+        var removeLeft = function (room) {
+            $('#' + room).remove();
+        }
+        /*
+        A function that will find the chat
+        */
+        var updateLeft = function (sender, text, room, tsunix) {
+            /*
+            1.Find the chatsession on the left
+            2. Update the text on the chat session
+            3. If chatsession is on the first one do nothing
+                3.1 If not then put it to first one
+            */
+            var block = $("#" + room + ".session-block");
+
+            // Update the text
+            if (text != null) {
+                var contentMsg = block.find('.session-content-msg').get(0);
+                var contentDate = block.find('.session-content-msg-date').get(0);
+                var user = userlist.filter(x => { return x.userid.S == sender })[0];
+                if (sender != userid) { // If the message does not belong to this user
+                    text = user.username.S + ": " + text;
+                } else { // If the message belongs to this user
+                    text = "You: " + text;
+                }
+                contentMsg.textContent = text;
+                contentDate.textContent = timeStampConvert(tsunix); // Convert the date
+            }
+
+            // Put the chatsession to the first one
+            block.prependTo(".room-menu-container").fadeIn("slow");
+        }
+
+        /*
+        A function that, given a boolean parameter of whether we are inviting chat or create chat
+        It will then populate the friend-invite-ulist with the friends that can be invited/chat with
+        */
+        var createInviteList = function (multiple) {
+            var friendInviteUList = document.getElementsByClassName('friend-invite-ulist')[0];
+
+            // Clean up the old list
+            while (friendInviteUList.firstChild != null) {
+                friendInviteUList.firstChild.remove();
+            }
+
+            // Fetching all the friends currently have
+            $.getJSON('/friends/fetchDetails', function (elements) {
+                var friendListInChat = chatsessions.filter(obj => { return obj.chatid.S == currentChatid });
+                var friendListToShow = elements;
+
+                // If multiple, we are currently getting thr friends that are not in the chat
+                // In order to invite them
+                if (multiple) {
+                    /// Will implement on touch one
+                    friendListInChat = friendListInChat[0].userids.SS;
+                    friendListToShow = elements.filter(obj => {
+                        return !friendListInChat.includes(obj.userid.S);
+                    });
+                }
+
+                // Check and filter to get the users that are online
+                friendListToShow = friendListToShow.filter(obj => {
+                    return obj.status != null && obj.status.S == "Online";
+                })
+
+                // Populate the friend ulist
+                for (var i = 0; i < friendListToShow.length; i++) {
+                    username = friendListToShow[i].username.S;
+                    neighborid = friendListToShow[i].userid.S;
+                    picture = friendListToShow[i].picture.S;
+                    createFriendInviteBlock(username, neighborid, picture);
+                }
+
+                // For each of the friend block, we will add the event listener. If it is checked, we will
+                // add a checked class to it, which is for CSS and identification
+                $('ul.friend-invite-ulist >li').find('input').each(function () {
+                    this.addEventListener('change', function () {
+                        if (this.checked) {
+                            var friendInvite = $(this).closest('.friend-invite');
+                            friendInvite.addClass("checked");
+                            if (!multiple) { // If we are not at multiple, we can then only select one
+                                var siblings = friendInvite.siblings('li').find('input').each(function () {
+                                    $(this).prop('checked', false);
+                                    $(this).closest('.friend-invite').removeClass("checked");
+                                })
+                            }
+                        } else { // If unchecked, we wil not check it
+                            $(this).closest('.friend-invite').removeClass("checked");
+                        }
+                    });
+                });
+            });
+        }
+
+        /*A helper function that create the actual friend-block given username, userid, and picture*/
+        var createFriendInviteBlock = function (username, userid, picture) {
+            var newBlockTemplate = "<li class=friend-invite id=!Replace-user-id!><div class='friend-block'>"
+                + "<div><img src='!Replace-picture!' /></div>"
+                + "<div class='friend-content'><div class='friend-content-name'>!Replace-username!</div></div>"
+                + "<div class='friend-invite-select'><input type='checkbox'></div></div></li>";
+
+            // Check for valid picture. If not, get default picture
+            var pic = '../owl.png';
+            if (picture != undefined && parseInt(picture) >= 0 && parseInt(picture)) {
+                pic = "../owl" + picture + ".png";
+            }
+
+            // Replace with parameter and append to the ulist
+            var block = newBlockTemplate.replace('!Replace-user-id!', userid);
+            block = block.replace('!Replace-username!', username);
+            block = block.replace('!Replace-picture!', pic);
+            $('ul.friend-invite-ulist').append(block);
+        }
+
+        $(document).ready(function () {
+
+            /*Socket calls. Including "chat message", "join room", and more
+            It mainly hears from the socket and, given the message, do actions accordingly
+            */
+
+            /* If a chat message is heard, we want to both update the blocks in updateLeft as well as adding the message to the mid-app
+            */
+            socket.on('chat message', function (msg) {
+                if (currentChatid == msg.room) {
+                    addMessage(msg.sender, msg.text, msg.tsunix, msg.messageID, false);
+                }
+                // Upload left-app
+                updateLeft(msg.sender, msg.text, msg.room, msg.tsunix);
+            });
+
+            /* If join rom is heard, then someone must have join the room. We would want to add it locally to chatsessions
+            And reload the session
+            */
+            socket.on('join room', function (msg) {
+                if (msg.sender != userid) {
+                    var c = chatsessions.filter(obj => { return obj.chatid.S == msg.room })[0];
+                    if (!c.userids.SS.includes(msg.sender)) {
+                        c.userids.SS.push(msg.sender);
+                    }
+                }
+                loadSessions();
+            });
+
+            /* Changing the chatname
+            */
+            socket.on('change chatname', function (msg) {
+                loadSessions();
+            });
+
+            /* When kick the user, we want to remove it from the friendlist
+            Then if we can successfully filter the room, we will delete the friend
+            from that chatsessions locally
+            */
+            socket.on('kick user', function (msg) {
+                $('.friends-list > li#' + msg.userToDelete).remove();
+                var room = chatsessions.filter(x => { return x.chatid.S == msg.room });
+                if (room.length != 0) {
+                    room = room[0];
+                    // Delete the friend from chatsessions locally
+                    var index = room.userids.SS.indexOf(msg.userToDelete);
+                    room.userids.SS.splice(index, 1);
+                }
+                loadSessions();
+            });
+
+            /* When a delete room is caled, it will remove the chatsession from the list
+            and wil hide all the unnecessary information like .mid-app and .right-app
+            */
+            socket.on('delete room', function (msg) {
+                $('#' + msg.room + ".session-block").remove();
+                chatsessions = chatsessions.filter(session => { return !session.chatid.S == msg.room });
+                $('.mid-app').hide();
+                $('.right-app').hide();
+            });
+
+            /* An event listener for when the bottom of the friend-invite-window
+            is clicked. It take care of both window: create chat and invite user
+            */
+            $('.friend-invite-bottom').click(function () {
+                // Get all the friends that are checked
+                var ids = $('input[type=checkbox]:checked').map(function (index, elem) {
+                    return $(elem).closest('li')[0].id;
+                }).toArray();
+                // Send invites
+                showInviteWindow(false);
+
+                // If the user actually checked some friends
+                if (ids.length > 0) {
+
+                    // If create chat is clicked
+                    if ($(this).find('i')[0].textContent == "Let's Chat") {
+                        findChatSession(ids[0]);
+                    } else { // If invite friends is clicked
+                        var ccc = chatsessions.filter(obj => { return obj.chatid.S == currentChatid })[0];
+                        if (ccc.type.N == 0) { // Needs to create new chat
+                            createChat(userid, ids, ccc.userids.SS);
+                        } else {
+                            inviteChat(currentChatid, ids);
+                        }
+                    }
+                }
+            });
+
+            /* Event handler for the option circle on the top right of the mid-app
+            It will call out the right app and process the friends
+            */
+            $('.session-options-circle').click(function (e) {
+                var menu = $('.right-app');
+
+                // Check if the friend list has been processed
+                // Every time we click a chat session, and then come to right-app
+                // It should be process only once until the user click a new chat
+                if (!friendlistIsProcessed) {
+                    var friendlistArea = $('.friends-list')[0];
+
+                    // Clearing out the fields
+                    while (friendlistArea.firstChild != null) {
+                        friendlistArea.removeChild(friendlistArea.firstChild);
+                    }
+
+                    // Calling to load the friend list with the chatid currently at
+                    loadFriendList(currentChatid);
+                    friendlistIsProcessed = true;
+                }
+
+                // Toggle
+                if (!menu.is(":visible")) {
+                    menu.show();
+                } else {
+                    menu.hide();
+                }
+            });
+
+            /*
+            An aesthetic handler that if the user click anything other than the invite
+            the invite window or the change chatname window will disappear.
+            */
+            $('#overlay').click(function (e) {
+                showInviteWindow(false);
+                showChangeChatnameWindow(false);
+            });
+
+            /*The following are the handler for the button on right-app
+            */
+            var uls = $('.right-app').find('li');
+
+            // friends button is clicked
+            uls[0].addEventListener('click', function () {
+                
+                // friend list will toggle
+                var friendslist = $('.friends-list');
+                if (friendslist.is(':visible')) {
+                    friendslist.hide();
+                } else {
+                    friendslist.show();
+                }
+            });
+
+            // invite friend button is clicked. Will create the invite list and will 
+            // show the window
+            uls[2].addEventListener('click', function () {
+                $('.friend-invite-bottom > i')[0].textContent = "Send Invitation";
+                createInviteList(true);
+                showInviteWindow(true);
+            });
+
+            // Delete chat is called
+            uls[3].addEventListener('click', function () {
+                // Find all members currently in
+                var membersToDelete = $('.friends-list').find('li').map((_, element) => {
+                    return element.id;
+                }).get();
+
+                // Delete everyone including self
+                membersToDelete.push(userid);
+                deleteChat(currentChatid, membersToDelete);
+            });
+
+            // Leave chat is called
+            uls[4].addEventListener('click', function () {
+                leaveChat(userid);
+                $('#' + currentChatid + ".session-block").remove();
+            });
+
+            // Change chatname button is called
+            uls[5].addEventListener('click', function () {
+                showChangeChatnameWindow(true);
+            })
+
+            // Scroll event for message area
+            // It will implement the infinite scrolling by detecting when 
+            // will the scroll reach the top
+            $('.msg-area').scroll(function () {
+                var div = $(this);
+                if (div.scrollTop() == 0) {
+                    // Load more chat when reach the top
+                    loadMessages(currentChatid, currentTsunix);
+                }
+            });
+
+            // Click event for create chat button
+            // It will change the text to let's chat and will show the invite window
+            $('.add-chat-button').click(function () {
+                $('.friend-invite-bottom > i')[0].textContent = "Let's Chat";
+                createInviteList(false);
+                showInviteWindow(true);
+            });
+
+            /* click event for chatname submit button
+            It will sanitize the new chatname
+            and then will update it accordingly
+            */
+            $('.chatname-submit-button').click(function () {
+                var newChatname = $.trim(document.getElementById('cchatname').value);
+                if (!newChatname.includes(';') && !newChatname.includes('!')) {
+                    // Submit new Chatname
+                    $.post('/chat/changechatname', { chatid: currentChatid, newChatname: newChatname }, function (data) {
+
+                        // Emit a socket to tell others taht names have been changed
+                        sendChangeChatnameNotif({ sender: userid, chatid: currentChatid, newChatname: newChatname });
+                    });
+                    showChangeChatnameWindow(false);
+                }
+            })
+        });
+
+        /* A helper function that send the socket
+        */
+        var sendChangeChatnameNotif = function (msg) {
+            socket.emit("change chatname", msg);
+        }
+
+        /* A helper function that will toggle the invite window
+        */
+        var showInviteWindow = function (show) {
+            if (show) {
+                $('.friends-invite-request-window').show();
+                $('#overlay').addClass('active');
+            } else {
+                $('.friends-invite-request-window').hide();
+                $('#overlay').removeClass('active');
+            }
+        }
+
+        /* A helper function that will toggle the changechatname window
+        */
+        var showChangeChatnameWindow = function (show) {
+            if (show) {
+                $('.change-chatname-window').show();
+                $('#overlay').addClass('active');
+            } else {
+                $('.change-chatname-window').hide();
+                $('#overlay').removeClass('active');
+            }
+        }
+    </script>
+    <script>
+        var userid;
+
+        /* A helper method that will convert the time to real time
+        */
+        var timeStampConvert = function (ts) {
+
+            //get full timeStamp
+            dt = new Date()
+            var date = new Date(ts - dt.getTimezoneOffset() * 60 * 1000);
+            var day = date.getDate();
+            var month = date.getMonth() + 1;
+            var year = date.getFullYear();
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            if (hours > 12) {
+                hours -= 12;
+                ampm = "PM";
+            } else {
+                ampm = "AM";
+            }
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            hours = hours == 0 ? 12 : hours;
+            var time = hours + ":" + minutes + " " + ampm;
+            return day + "/" + month + "/" + year + " " + time;
+        }
+
+
+        /*
+        Add a scroll listener that will get more notification if any if scroll to the bottom
+        */
+        $(document).ready(function () {
+            $('.notification-main').scroll(function () {
+                var div = $(this);
+                if (this.scrollHeight + div.scrollTop() > $(this).height() - 5) {
+                    getNotifications(true);
+                }
+            })
+        })
+        
+        var notificationlist = [];
+
+        /*Set default NotifTSunix to make sure to get the tsunix*/
+        var latestNotifTSunix = Date.now() + 1000000000;
+        var earliestNotifTSunix = Date.now() + 1000000000;
+
+        // Forward means later. Backward means earlier
+        var getNotifications = function (getEarlier) {
+            return new Promise((resolve, reject) => {
+                var msg = {
+                    tsunix: latestNotifTSunix,
+                    direction: 'forward',
+                }
+                if (getEarlier) {
+                    msg.tsunix = earliestNotifTSunix;
+                    msg.direction = 'backward';
+                }
+                $.getJSON('/notification/get', msg, function (elements) {
+                    // Difference include both id and in general status update.
+                    elements = elements.map(obj => {
+                        return { notificationid: obj.notificationid.S, tsunix: obj.tsunix.N, content: JSON.parse(obj.content.S), type: obj.type.S, status: obj.status.S };
+                    })
+                    var difference = elements.filter(obj => {
+                        return !notificationlist.includes(obj);
+                    });
+
+                    // ID difference are the new message
+                    var idDifference = difference.filter(obj => {
+                        return !notificationlist.filter(obj2 => { return obj2.notificationid == obj.notificationid }).length != 0;
+                    });
+                    var notIdDifference = difference.filter(obj => {
+                        return !idDifference.includes(obj);
+                    });
+                    // idDifference sort in left to right descending order of tsunix
+                    idDifference.sort((a, b) => {
+                        return b.tsunix - a.tsunix;
+                    });
+
+                    // Get all relevant user
+                    var usids = idDifference.map(x => { return x.content.senderid });
+                    var usids2 = idDifference.map(x => { return x.content.receiverid });
+                    var usids = usids.concat(usids2);
+                    usids = [...new Set(usids)];
+                    // If no ids to add, this means that there are no idDifference
+                    if (usids.length == 0) {
+                        // Process the notIdDifference -> Update the status in notificationlist
+                        for (var i = 0; i < notIdDifference.length; i++) {
+                            var obj = notIdDifference[i];
+                            var index = notificationlist.indexOf(notificationlist.filter(obj2 => { return obj2.notificationid == obj.notificationid })[0]);
+                            notificationlist[index] = obj;
+                            updateNotification(obj.content.senderid, obj.notificationid, obj.status, obj.type, getEarlier);
+                        }
+                        if (notificationlist.length > 0) {
+                            earliestNotifTSunix = notificationlist[notificationlist.length - 1].tsunix;
+                            latestNotifTSunix = notificationlist[0].tsunix;
+                        }
+                        resolve("success");
+                    } else {
+
+                        // First the the userdetails. Specifically asking for username and pictures
+                        $.getJSON('/getuserdetailsall', { ids: usids }, function (elements) {
+                            for (var i = 0; i < idDifference.length; i++) {
+                                var obj = idDifference[i];
+                                var friend = elements.filter(objt => {
+                                    return (objt.userid.S == obj.content.senderid || objt.userid.S == obj.content.receiverid) &&
+                                        (objt.userid.S != userid)
+                                });
+                                if (friend.length != 0) {
+                                    // Create the notification if we can find the user. Otherwise, we don't add it
+                                    var friendname = friend[0].username.S;
+                                    var friendpic = friend[0].picture.S;
+                                    addNotification(obj.content.senderid, friendname, obj.notificationid, obj.content.chatname,
+                                        obj.content.chatid, obj.status, obj.type, obj.tsunix, obj.content.action, friendpic, getEarlier);
+                                }
+                            }
+                            // Put idDifference as a part of the notification list
+                            if (getEarlier) {
+                                notificationlist = notificationlist.concat(idDifference);
+                            } else {
+                                notificationlist = idDifference.concat(notificationlist);
+                            }
+                            // Process the notIdDifference -> Update the status in notificationlist
+                            for (var i = 0; i < notIdDifference.length; i++) {
+                                var obj = notIdDifference[i];
+                                var index = notificationlist.indexOf(notificationlist.filter(obj2 => { return obj2.notificationid == obj.notificationid })[0]);
+                                notificationlist[index] = obj;
+                                updateNotification(obj.content.senderid, obj.notificationid, obj.status, obj.type, getEarlier);
+                            }
+                            if (notificationlist.length > 0) {
+                                earliestNotifTSunix = notificationlist[notificationlist.length - 1].tsunix;
+                                latestNotifTSunix = notificationlist[0].tsunix;
+                            }
+                            resolve("success");
+                        });
+                    }
+                });
+            });
+
+        }
+
+        /* A helper function that will retrieve the notificaion given the notification element
+        given the current cursor
+        */
+        var findNotification = function (element) {
+            var notificationid = $(element).closest('.notification-block')[0].id;
+            var notification = notificationlist.filter(obj => { return obj.notificationid == notificationid });
+            if (notification.length == 1) {
+                notification = notification[0];
+            } else {
+                // Get json on this notification
+            }
+            return notification;
+        }
+
+        /*
+        The function that will update the notification by finding the notification and change the status
+        */
+        var updateNotification = function (senderid, notificationid, status, type, isEarlier) {
+            var notifBlock = $('.notification-block#' + notificationid);
+            if (notifBlock.length != 0) {
+                if (status != 'unseen') { // If the user has seen it
+                    var notifCircle = notifBlock.find('.unseen-icon')[0];
+                    if (notifCircle.classList.length == 1) {
+                        notifCircle.classList.push('seen');
+                    }
+                }
+                if (status == 'addressed') { // If the user has addressed it
+                    var notifButtons = notifBlock.find('.notification-button-menu')[0];
+                    if (notifButtons.classList.length == 1) {
+                        notifCircle.classList.push('addressed');
+                    }
+                }
+            } else {
+                alert("Error");
+            }
+        }
+
+        /* This function will edit the block tempate and then add the notification
+        onto the list
+        */
+        var addNotification = function (senderid, username, notificationid, chatname, chatid, status, type, tsunix, action, picture, isEarlier) {
+            var newBlockTemplate = "<div class='notification-block' id='!Replace-notif-id!'><div><img src=\"!Replace-picture!\" /></div>"
+                + "<div class='notification-content !Replace-Type!'><div class='notification-content-name' id=!Replace-userid!>!Replace-username!</div>"
+                + "<div class='notification-content-msg-block' !Replace-with-chat!><div class='notification-content-msg'>!Replace-message!</div>"
+                + "<div class='notification-content-msg-date'>!Replace-time!</div></div></div>"
+                + "<div class='unseen-icon !Replace-circle!'><i class='fas fa-circle fa-xs'></i></div>"
+                + "<div class='break'></div><div class='notification-button-menu !Replace-button!'>"
+                + "<div class='notification-button accept-notification'><i class='far fa-check-circle'>Accept</i></div>"
+                + "<div class='notification-button reject-notification'><i class='far fa-times-circle'>Reject</i></div></div></div>";
+
+            // Edit ids
+            var block = newBlockTemplate.replace('!Replace-userid!', senderid).replace('!Replace-notif-id!', notificationid);
+
+            // edit time
+            block = block.replace('!Replace-time!', timeStampConvert(tsunix));
+
+            // Edit picture
+            var picture;
+            if (picture != undefined && parseInt(picture) >= 0 && parseInt(picture) <= 14) {
+                picture = "../owl" + picture + ".png"
+            } else {
+                picture = "../owl.png"
+            }
+            block = block.replace('!Replace-picture!', picture);
+            if (status != 'unseen') {
+                block = block.replace('!Replace-circle!', 'seen');
+            } else {
+                block = block.replace('!Replace-circle!', '');
+            }
+
+            // Edit status
+            if (status != "addressed" && senderid != userid) {
+                block = block.replace('!Replace-button!', '');
+            } else {
+                block = block.replace('!Replace-button!', 'addressed');
+            }
+            if (action == null) { // No action. Not a inverse notification
+                if (type == "friendRequest") {
+                    block = block.replace('!Replace-message!', "Want to be your friend").replace('!Replace-Type!', "friendRequest");
+                } else {
+                    block = block.replace('!Replace-message!', "Invites you to chat").replace('!Replace-Type!', "chatRequest");
+                    block = block.replace('!Replace-with-chat!', chatid);
+                }
+            } else { // Inverse notification
+                if (type == "friendRequest") {
+                    block = block.replace('!Replace-message!', "Accepted your friend request").replace('!Replace-Type!', "friendRequest");
+                } else {
+                    block = block.replace('!Replace-message!', "Accepted your invitation to chat").replace('!Replace-Type!', "chatRequest");
+                    block = block.replace('!Replace-with-chat!', chatid);
+                }
+            }
+
+            // Username
+            block = block.replace('!Replace-username!', username);
+
+            // Only append to receiver or is inverse notification
+            if (((status != "addressed" && senderid != userid) || (status == "addressed"))) {
+                if (isEarlier) { // Append to first
+                    $('.notification-main').append(block);
+                } else {
+                    $('.notification-main').prepend(block);
+                }
+
+                /*
+                Event that if clicked on the notification block will update it from unseen to seen
+                */
+                $('#' + notificationid).on("click", function (e) {
+
+                    var notification = findNotification(this);
+
+                    // Check if what we are clicking is the notification block. Don't want this to work when clicking buttons
+                    if (!$('#' + notification.notificationid).find('.notification-button-menu').get(0).contains(e.target)) {
+                        if (notification.status == 'unseen') {
+                            notification.status = 'seen';
+                            $.post('/notification/update', notification, function (data) {
+                                if (data != null) {
+                                    $('#' + notification.notificationid).find('.unseen-icon').addClass('seen');
+                                } else {
+                                    alert("error");
+                                }
+                            });
+                        }
+                    }
+                });
+
+                /*
+                Event for accept notification
+                */
+                $('#' + notificationid).find('.notification-button.accept-notification').on('click', function (e) {
+                    var notification = findNotification(this);
+                    notification.action = "accept";
+                    var button = this;
+                    notification.status = 'addressed';
+
+                    // Update the notification if accept
+                    $.post('/notification/update', notification, function (data) {
+
+                        // Change the notification to address stage
+                        if (data != null) {
+                            $("#" + notification.notificationid).find('.notification-button-menu').addClass('addressed');
+                            $("#" + notification.notificationid).find('.unseen-icon').addClass('seen');
+                            var resNotification = notification;
+                            if (notification.type == "chatInviteRequest") {
+                                const promise = new Promise((resolve, reject) => {
+                                    if (loadSessions()) {
+                                        resolve('success');
+                                    }
+                                });
+                                promise.then(resolve => {
+                                    joinChat(userid, notification.content.chatid, true);
+                                });
+
+                            }
+                            resNotification.tsunix = Date.now();
+
+                            // Send an inverse notification
+                            $.post('/notification/accept', resNotification, function (data) {
+                                if (data != null) {
+                                    $.post('/chat')
+                                }
+                            });
+                        } else {
+                            alert('error')
+                        }
+                    });
+                });
+
+                /* If reject. Only update the status and do nothing
+                */
+                $('#' + notificationid).find('.notification-button.reject-notification').on('click', function () {
+                    var notification = findNotification(this);
+                    notification.action = "reject";
+                    notification.status = 'addressed';
+                    $.post('/notification/update', notification, function (data) {
+                        if (data != null) {
+                            $("#" + notification.notificationid).find('.notification-button-menu').addClass('addressed');
+                            $("#" + notification.notificationid).find('.unseen-icon').addClass('seen');
+                        } else {
+                            alert('error')
+                        }
+                    });
+                });
+            }
+        }
+
+        /*
+        Method that will be called every ten seconds. It will refresh the notification
+        */
+        var refreshTime = function () {
+            // Use promise to prevent concurrent issue
+            const promise = getNotifications(false);
+            promise.then(resolve => {
+                setTimeout(refreshTime, 10000);
+            })
+            // Reset timer
+        }
+
+        $(document).ready(function () {
+            while ($('.notification-main')[0].firstChild != null) {
+                $('.notification-main')[0].firstChild.remove();
+            }
+            $.get('/user', function (data) {
+                userid = data;
+                getNotifications(true);
+                // When this page is ready, first set timer
+                setTimeout(refreshTime, 10000);
+            })
+        });
+
+        // Toggle function for notifcation
+        $(document).ready(function () {
+            $('li.notification-trigger').click(function () {
+                $('.notification-site').toggle();
+            });
+        })
+
+    </script>
+
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+        <div class="container-fluid">
+            <a href="/main" class="navbar-brand">
+                <img src="../owl.png">
+            </a>
+            <a href="/friends/search" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Search
+                Friends</a>
+            <a href="/news/search" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Search News</a>
+            <a href="/visualizer" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Visualizer</a>
+            <ul class="nav navbar-nav navbar-right" style="margin-top:20px;">
+                <li><a href="/main"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+                <li><a href="/ownwall"><span class="glyphicon glyphicon-bookmark"></span>Wall</a></li>
+                <li><a href="/friends"><span class="glyphicon glyphicon-heart"></span>Friends</a></li>
+                <li><a href="/chat"><span class="glyphicon glyphicon-comment"></span>Chats</a></li>
+                <li><a href="/news"><span class="glyphicon glyphicon-blackboard"></span>News</a></li>
+                <li><a href="/userdetails"><span class="glyphicon glyphicon-user"></span>Profile</a></li>
+                <li class="notification-trigger"><a><span class="glyphicon glyphicon-bell"></span>Notification</a> </li>
+                <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="app">
+        <div class="left-app">
+            <div class="chat-menu-container">
+                <div class="room-menu-container">
+                    <div class="session-block">
+                        <div>
+                            <img src="../owl.png" />
+                        </div>
+                        <div class="session-content">
+                            <div class="session-content-name">Gary Chen</div>
+                            <div class="session-content-msg-block">
+                                <div class="session-content-msg">Hello there</div>
+                                <div class="session-content-msg-date">Monday</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="add-chat-button">
+                    <i class="far fa-comment-dots"> Create Chat</i>
+                </div>
+            </div>
+        </div>
+        <div class="mid-app">
+            <div class="header-area">
+                <div class="chatname-block">
+                    <div class="chatname">Chatroom</div>
+                </div>
+                <div class=option-place>
+                    <div class="session-options-circle">
+                        <i class="fas fa-ellipsis-h fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="msg-area">
+                <div class="msgs-received">
+                    <div>
+                        <img src="../owl.png" />
+                    </div>
+                    <div class="msgs-block">
+                        <div class="msg-received">
+                            <div class="msg-received-text">
+                                Hey may! How's it going?
+                            </div>
+                        </div>
+                        <div class="msg-received">
+                            <div class="msg-received-text">
+                                Hey may! How's it going?
+                            </div>
+                        </div>
+                        <div class="msg-received">
+                            <div class="msg-received-text">
+                                Hey may! How's it going?
+                            </div>
+                        </div>
+                    </div>
+                    <div class='username'>Gary Chen</div>
+                    <div class="msg-time">Blablabla</div>
+                </div>
+                <div class="msgs-sent">
+                    <div class="msgs-block">
+                        <div class="msg-sent">
+                            <div class="msg-sent-text">
+                                It's good! It's good! It's good! It's good! It's good! It's good! It's good! It's good!
+                                It's
+                                good! It's good!
+                            </div>
+                        </div>
+                        <div class="msg-sent">
+                            <div class="msg-sent-text">
+                                It's good! It's good! It's good! It's good! It's good!
+                            </div>
+                        </div>
+                        <div class="msg-sent">
+                            <div class="msg-sent-text">
+                                It's good! It's good! It's good! It's good! It's good!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="msg-time">Blablabla</div>
+                </div>
+            </div>
+            <div id="input-area">
+                <div class="buttons"></div>
+                <div class="input-box">
+                    <input type="text" id="input" class="form-control" placeholder="write...">
+                    <button type="button" id="send-btn" class="btn btn-primary" onclick="return sendChat();"><i
+                            class="fas fa-feather-alt"></i></button>
+                    <!-- Can add an icon here-->
+                </div>
+            </div>
+        </div>
+        <div class="right-app">
+            <div class="session-options-list">
+                <ul class="option-list">
+                    <li class="option friend-button"><i class="fab fa-earlybirds"></i>Friends</li>
+                    <ul class="friends-list">
+                        <li>
+                            <div class="friend-block">
+                                <div>
+                                    <img src="../owl.png" />
+                                </div>
+                                <div class="friend-content">
+                                    <div class="friend-content-name">Gary Chen</div>
+                                </div>
+                                <div class="chat-button">
+                                    <i class="far fa-comment-dots fa-2x"></i>
+                                </div>
+                                <div class="delete-button">
+                                    <i class="fas fa-times fa-2x"></i>
+                                </div>
+
+                            </div>
+                        </li>
+                    </ul>
+                    <li class="option"><i class="fas fa-plus"></i>Invite Friends</li>
+                    <li class="option"><i class="fas fa-ban"></i>Delete Chat</li>
+                    <li class="option"><i class='fas fa-sign-out-alt'></i>Leave Chat</li>
+                    <li class="option"><i class="fas fa-edit"></i>Change Chat Name</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="friends-invite-request-window">
+            <div class="friend-invite-header">
+                <span>Invite Your Friends</span>
+            </div>
+            <div class="friend-invite-list">
+                <ul class="friend-invite-ulist">
+                    <li class=friend-invite>
+                        <div class="friend-block">
+                            <div>
+                                <img src="../owl.png" />
+                            </div>
+                            <div class="friend-content">
+                                <div class="friend-content-name">Gary Chen</div>
+                            </div>
+                            <div class="friend-invite-select"><input type="checkbox"></div>
+                        </div>
+                    </li>
+                    <li class=friend-invite>
+                        <div class="friend-block">
+                            <div>
+                                <img src="../owl.png" />
+                            </div>
+                            <div class="friend-content">
+                                <div class="friend-content-name">Sam</div>
+                            </div>
+                            <div class="friend-invite-select"><input type="checkbox"></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="friend-invite-bottom">
+                <i class="fas fa-envelope-open-text fa-2x"> Send Invitation</i>
+            </div>
+        </div>
+        <div id="overlay"></div>
+
+
+        <div class="notification-site">
+            <div class="notification-window">
+                <div class="notification-header">
+                    <h1> Notifications</h1>
+                    <!--Can add read and unread if have time-->
+                </div>
+                <hr>
+                <div class="notification-main">
+                    <div class="notification-block">
+                        <div>
+                            <img src="../owl.png" />
+                        </div>
+                        <div class="notification-content chatRequest">
+                            <div class="notification-content-name">Gary Chen blablablablablablaljijij</div>
+                            <div class="notification-content-msg-block">
+                                <div class="notification-content-msg">invites you to chat + names</div>
+                                <div class="notification-content-msg-date">Monday</div>
+                            </div>
+                        </div>
+                        <div class="unseen-icon">
+                            <i class="fas fa-circle fa-xs"></i>
+                        </div>
+                        <div class="break"></div>
+                        <div class="notification-button-menu">
+                            <div class="notification-button accept-notification">
+                                <i class="far fa-check-circle">Accept</i>
+                            </div>
+                            <div class="notification-button reject-notification">
+                                <i class="far fa-times-circle">Reject</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="notification-block">
+                        <div>
+                            <img src="../owl.png" />
+                        </div>
+                        <div class="notification-content friendRequest">
+                            <div class="notification-content-name">Gary Chen blablablablablablaljijij</div>
+                            <div class="notification-content-msg-block">
+                                <div class="notification-content-msg">Want to be your friend</div>
+                                <div class="notification-content-msg-date">Monday</div>
+                            </div>
+                        </div>
+                        <div class="unseen-icon">
+                            <i class="fas fa-circle fa-xs"></i>
+                        </div>
+                        <div class="break"></div>
+                        <div class="notification-button-menu">
+                            <div class="notification-button accept-notification">
+                                <i class="far fa-check-circle">Accept</i>
+                            </div>
+                            <div class="notification-button reject-notification">
+                                <i class="far fa-times-circle">Reject</i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="change-chatname-window">
+            <div class="change-chatname-container">
+                <form>
+                    <label for="cchatname">Change chatname to: </label>
+                    <input type="text" id="cchatname" maxlength="50" placeholder="New Chatname" value=''>
+                </form>
+                <div class="chatname-submit-button"><i class="fas fa-feather fa-2x chatname-submit-icon">Change</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>

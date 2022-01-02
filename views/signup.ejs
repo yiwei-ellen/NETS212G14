@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+ <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+      height: 80px;
+    }
+
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {
+      height: 700px
+    }
+
+    .navbar .navbar-brand img {
+      height: 40px;
+    }
+
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+
+    .navbar-form {
+      vertical-align: middle;
+      height: 45px;
+    }
+
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+
+      .row.content {
+        height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <%if (message !=null) { %>
+    <p color="red">
+      <%= message %>
+    </p>
+    <% } %>
+    <nav class="navbar  class=" navbar navbar-light" style="background-color: #e3f2fd;">
+    <div class="container-fluid">
+      <a href="/main" class="navbar-brand">
+        <img src="owl.png">
+      </a>
+      <a href="/" class="btn btn-primary btn-md" role="button" style = "margin-top:20px;" >Login</a>
+    </div>
+  </nav>
+      <form class="row g-3" action="/createaccount" method="post">
+        <div class="container">
+          <div class="row justify-content-center" style="margin-top:20px">
+            <div class="col-md-3">
+              <label for="inputEmail4" class="form-label">Email</label>
+              <input type="email" class="form-control" id="inputEmail4" name="email" onchange="validateEmail()">
+            </div>
+            <div class="col-md-3">
+              <label for="inputPassword4" class="form-label">Password</label>
+              <input type="password" class="form-control" id="inputPassword4" name="password">
+            </div>
+          </div>
+          <div class="row justify-content-center" style="margin-top:10px">
+            <div class="col-md-3">
+              <label for="inputFirstname" class="form-label">First Name</label>
+              <input type="firstname" class="form-control" id="inputFirstname" name="firstname">
+            </div>
+            <div class="col-md-3">
+              <label for="inputLastname" class="form-label">Last Name</label>
+              <input type="lastname" class="form-control" id="inputLastname" name="lastname">
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-3">
+              <label for="inputUsername" class="form-label">Login Name</label>
+              <input type="text" class="form-control" id="inputUsername" name="username">
+            </div>
+            <div class="col-3">
+              <label for="inputState" class="form-label">Affiliation</label>
+              <select id="inputState" class="form-select" name="affiliation">
+                <option disabled selected>Choose...</option>
+	              <option>College</option>
+	              <option>NETS212</option>
+	              <option>Wharton</option>
+	              <option>Engineering</option>
+	              <option>Nursing</option>
+	              <option>Law</option>
+	              <option>Medicine</option>
+	              <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="row justify-content-center" style="margin-top:20px">
+            <div class="col-6">
+              <label for="start">Birthday</label><br>
+              <input type="date" id="start" name="birthday" value="2018-07-22" min="1900-01-01" max="2021-12-9">
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row justify-content-center" style="margin-top:10px">
+            <div class="col-6">
+              <label class="mdb-main-label">Choose your interests</label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="ENTERTAINMENT" />
+                <label class="form-check-label" for="ENTERTAINMENT">Entertainment</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="POLITICS" />
+                <label class="form-check-label" for="POLITICS">Politics</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="WORLD NEWS" />
+                <label class="form-check-label" for="WORLD NEWS">World News</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="SPORTS" />
+                <label class="form-check-label" for="SPORTS">Sports</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="BUSINESS" />
+                <label class="form-check-label" for="BUSINESS">Business</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="SCIENCE" />
+                <label class="form-check-label" for="SCIENCE">Science</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="TECH" />
+                <label class="form-check-label" for="TECH">Tech</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="STYLE & BEAUTY" />
+                <label class="form-check-label" for="STYLE & BEAUTY">Style & Beauty</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="STYLE" />
+                <label class="form-check-label" for="STYLE">Style</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="COMEDY" />
+                <label class="form-check-label" for="COMEDY">Comedy</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="WOMEN" />
+                <label class="form-check-label" for="WOMEN">Women</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="IMPACT" />
+                <label class="form-check-label" for="IMPACT">Impact</label>
+              </div>
+
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="ARTS" />
+                <label class="form-check-label" for="ARTS">Arts</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="ARTS & CULTURE" />
+                <label class="form-check-label" for="ARTS & CULTURE">Arts & Culture</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="MEDIA" />
+                <label class="form-check-label" for="MEDIA">Media</label>
+              </div>
+
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="QUEER VOICES" />
+                <label class="form-check-label" for="QUEER VOICES">Queer Voices</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="LATINO VOICES" />
+                <label class="form-check-label" for="LATINO VOICES">Latino Voices</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="BLACK VOICES" />
+                <label class="form-check-label" for="BLACK VOICES">Black Voices</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="WELLNESS" />
+                <label class="form-check-label" for="WELLNESS">Wellness</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="HEALTHY LIVING" />
+                <label class="form-check-label" for="HHEALTHY LIVING">Healthy Living</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="PARENTING" />
+                <label class="form-check-label" for="PARENTING">Parenting</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="TASTE" />
+                <label class="form-check-label" for="TASTE">Taste</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="FOOD & DRINK" />
+                <label class="form-check-label" for="FOOD & DRINK">Food & Drink</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="WORLDPOST" />
+                <label class="form-check-label" for="WORLDPOST">Worldpost</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="TRAVEL" />
+                <label class="form-check-label" for="TRAVEL">Travel</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="HOME & LIVING" />
+                <label class="form-check-label" for="HOME & LIVING">Home & Living</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="GREEN" />
+                <label class="form-check-label" for="GREEN">Green</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="WEDDINGS" />
+                <label class="form-check-label" for="WEDDINGS">Weddings</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="DIVORCE" />
+                <label class="form-check-label" for="DIVORCE">Divorce</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="PARENTS" />
+                <label class="form-check-label" for="PARENTS">Parents</label>
+              </div>
+
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="CRIME" />
+                <label class="form-check-label" for="CRIME">Crime</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="WEIRD NEWS" />
+                <label class="form-check-label" for="WEIRD NEWS">Weird News</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="FIFTY" />
+                <label class="form-check-label" for="FIFTY">Fifty</label>
+              </div>
+
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="COLLEGE" />
+                <label class="form-check-label" for="COLLEGE">College</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="EDUCATION" />
+                <label class="form-check-label" for="EDUCATION">Education</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="RELIGION" />
+                <label class="form-check-label" for="RELIGION">Religion</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="d-grid gap-2 col-6 mx-auto" style="margin-top:10px">
+            <button type="submit" class="btn btn-primary" onclick="return checkMultiBox()">Submit and Log in</button>
+          </div>
+        </div>
+      </form>
+
+
+
+
+      <script type="text/javascript">
+
+
+        function checkMultiBox() {
+        //check length upon submission
+          ct = 0;
+          names = ["ENTERTAINMENT", "POLITICS", "WORLD NEWS", "SPORTS", "BUSINESS", "SCIENCE", "TECH", "STYLE & BEAUTY", "STYLE",
+            "COMEDY", "WOMEN", "IMPACT", "ARTS", "ARTS & CULTURE", "MEDIA", "QUEER VOICES", "LATINO VOICES", "BLACK VOICES",
+            "WELLNESS", "HEALTY LIVING", "PARENTING", "TASTE", "WEDDINGS", "DIVORCE", "EDUCATION", "COLLEGE", "PARENTS", "FIFTY",
+            "WEIRD NEWS", "CRIME", "GREEN", "RELIGION", "HOME & LIVING", "FOOD & DRINK", "WORLDPOST", "TRAVEL"];
+          for (i = 0; i < names.length; i++) {
+            document.getElementById(names[i]).setAttribute("name", names[i]);
+            if (document.getElementById(names[i]).checked) {
+              ct += 1;
+              document.getElementById(names[i]).value = "checked";
+            }
+          }
+          if (ct < 2) {
+            alert("less than two interests selected");
+            return false;
+          }
+          return true;
+        }
+
+        function validateEmail() {
+          var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+          if (!document.getElementById('inputEmail4').value.match(mailformat)) {
+            alert("You have entered an invalid email address!");
+            document.getElementById('inputEmail4').value = '';
+          }
+        }
+      </script>
+
+
+
+</body>
+
+</html>

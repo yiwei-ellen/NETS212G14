@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!-- navigation files -->
+	<link type="text/css" href="../css/nav.css" rel="stylesheet" />
+	<style>
+		.notification-site {
+			display: none;
+		}
+		.friend-list {
+			margin: -1px;
+			list-style-type: none;
+		}
+
+		.friend-list .friend-img img {
+			max-width: 100%;
+		}
+
+		.friend-list {
+			padding: 0;
+		}
+
+		.friend-list>li {
+			float: left;
+			width: 50%;
+		}
+
+		.friend-list>li>a {
+			display: block;
+			text-decoration: none;
+			color: #000;
+			padding: 0.625rem;
+			margin: 1px;
+			background: #fff;
+		}
+
+		.friend-list>li>a:after,
+		.friend-list>li>a:before {
+			content: "";
+			display: table;
+			clear: both;
+		}
+
+		.friend-list .friend-img {
+			float: left;
+			width: 4rem;
+			height: 4rem;
+			overflow: hidden;
+			background: #efeff4;
+		}
+
+		.friend-list .friend-info {
+			margin-left: 3.625rem;
+		}
+
+		.friend-list .friend-info h4 {
+			margin: 0.3125rem 0;
+			font-size: 0.875rem;
+			font-weight: 600;
+		}
+
+		.friend-list .friend-info p {
+			color: #666;
+			margin: 0;
+		}
+
+		.btn-danger {
+			display: none;
+		}
+
+		.onlinedot {
+			height: 0.5rem;
+			width: 0.5rem;
+			background-color: #0c0;
+			border-radius: 50%;
+			display: inline-block;
+		}
+
+		.offlinedot {
+			height: 0.5rem;
+			width: 0.5rem;
+			background-color: #bbb;
+			border-radius: 50%;
+			display: inline-block;
+		}
+	</style>
+	<script type="text/javascript">
+
+		var getFriends = function () {
+			//console.log("This is called");
+			$.get("/friends/fetchDetails", function (data, status) {
+				if (status == "success") {
+					//console.log(data);
+					//console.log(data);
+					json = JSON.parse(data);
+					//console.log(json)
+					$("#number-friends").html("Friend List (" + json.length + ")");
+					for (var i = 0; i < json.length; i++) {
+						//add to friends list
+						var dot;
+						//console.log(json[i]);
+						if (json[i].status == undefined) {
+							var status = "Offline"
+						} else {
+							var status = json[i].status.S
+						}
+						if (status == "Online") {
+							dot = `<span class="onlinedot"></span>`
+						} else {
+							dot = `<span class="offlinedot"></span>`
+						}
+					var picture
+					if (json[i].picture == undefined) {
+						picture = "../owl.png"
+					} else {
+						picture = "../owl" +  json[i].picture.S + ".png"
+					}
+						$("#friends-list").append(
+							`<li>
+		            <a href="user/` + json[i].username.S + `">
+		                <div class="friend-img"><img src="` + picture + `" alt="" /></div>
+		                <div class="friend-info">
+		                    <h4>` + dot + "   " + json[i].username.S + `</h4>
+		                    <p>Name: ` + json[i].firstname.S + " " + json[i].lastname.S + `</p>
+		                    <p>Affiliation: ` + json[i].affiliation.S + `</p>
+		                    <button class="btn btn-danger" id="delete` + json[i].userid.S + `">Delete</button>
+		                </div>
+		            </a>
+		        </li>`);
+					}
+				}
+			}).fail(function () {
+				console.log('error');
+			});
+		}
+		$(document).ready(function () {
+			$("#toggle-delete").click(function () {
+				//console.log('click')
+				$(".btn-danger").toggle();
+			});
+			$("#friends-list").on("click", "button", function () {
+				var userid = $(this).attr("id").split("delete")[1];
+				//console.log(userid)
+				$.post("/friends/delete", { targetid: userid }, function (data, status) {
+					if (status == "success") {
+						//console.log("deleted");
+						$("#friends-list").html("")
+						getFriends();
+					}
+				});
+			});
+			getFriends()
+		});
+	</script>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+		<div class="container-fluid">
+			<a href="/main" class="navbar-brand">
+				<img src="owl.png">
+			</a>
+			<a href="/friends/search" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Search
+				Friends</a>
+			<a href="/news/search" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Search News</a>
+			<a href="/visualizer" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Visualizer</a>
+			<ul class="nav navbar-nav navbar-right" style="margin-top:20px;">
+				<li><a href="/main"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+				<li><a href="/ownwall"><span class="glyphicon glyphicon-bookmark"></span>Wall</a></li>
+				<li><a href="/friends"><span class="glyphicon glyphicon-heart"></span>Friends</a></li>
+				<li><a href="/chat"><span class="glyphicon glyphicon-comment"></span>Chats</a></li>
+				<li><a href="/news"><span class="glyphicon glyphicon-blackboard"></span>News</a></li>
+				<li><a href="/userdetails"><span class="glyphicon glyphicon-user"></span>Profile</a></li>
+				<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="row row-space-20">
+		<div class="col-md-6">
+			<div class="tab-content p-0">
+				<div class="tab-pane active show" id="profile-friends">
+					<div class="m-b-15"><b id="number-friends">Friend List</b> <button id="toggle-delete" align='right'>
+							Edit Friends </button> </div>
+					<ul class="friend-list clearfix" id='friends-list'>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+
+</html>

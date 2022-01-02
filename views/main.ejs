@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Home Page</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<!-- navigation files -->
+	<link type="text/css" href="../css/nav.css" rel="stylesheet" />
+	<script language="javascript" type="text/javascript" src="../js/notification.js"></script>
+	<style>
+		/* Remove the navbar's default margin-bottom and rounded borders */
+		.navbar {
+			margin-bottom: 0;
+			border-radius: 0;
+			height: 80px;
+		}
+
+		/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+		.row.content {
+			height: 700px
+		}
+
+		.navbar .navbar-brand img {
+			height: 40px;
+		}
+
+		/* Set gray background color and 100% height */
+		.sidenav {
+			padding-top: 20px;
+			background-color: #f1f1f1;
+			height: 100%;
+		}
+
+		.navbar-form {
+			vertical-align: middle;
+			height: 45px;
+		}
+
+		/* Set black background color, white text and some padding */
+		footer {
+			background-color: #555;
+			color: white;
+			padding: 15px;
+		}
+
+		/* On small screens, set height to 'auto' for sidenav and grid */
+		@media screen and (max-width: 767px) {
+			.sidenav {
+				height: auto;
+				padding: 15px;
+			}
+
+			.row.content {
+				height: auto;
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<nav class="navbar  class=" navbar navbar-light" style="background-color: #e3f2fd;">
+		<div class="container-fluid">
+			<a href="/main" class="navbar-brand">
+				<img src="../owl.png">
+			</a>
+			<a href="/friends/search" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Search
+				Friends</a>
+			<a href="/news/search" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Search News</a>
+			<a href="/visualizer" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Visualizer</a>
+			<ul class="nav navbar-nav navbar-right" style="margin-top:20px;">
+				<li><a href="/ownwall"><span class="glyphicon glyphicon-bookmark"></span>Wall</a></li>
+				<li><a href="/friends"><span class="glyphicon glyphicon-heart"></span>Friends</a></li>
+				<li><a href="/chat"><span class="glyphicon glyphicon-comment"></span>Chats</a></li>
+				<li><a href="/news"><span class="glyphicon glyphicon-blackboard"></span>News</a></li>
+				<li><a href="/userdetails"><span class="glyphicon glyphicon-user"></span>Profile</a></li>
+				<li class="notification-trigger"><a><span class="glyphicon glyphicon-bell"></span>Notification</a> </li>
+				<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="container-fluid text-center">
+		<div class="row content">
+			<div class="col-sm-2 sidenav">
+			</div>
+			<div class="col-sm-8 text-left">
+				<h1>Welcome, <%= message%> </h1>
+				<hr>
+				<form>
+					<!--this should be on onclick ajax call-->
+					<div class="form-group">
+						<label>Post Something</label>
+						<textarea class="form-control" rows="3" id="userpost"></textarea>
+					</div>
+					<div style="text-align:center;margin-top:20px">
+						<input type="button" value="Submit"
+							onclick="newPost(document.getElementById('userpost').value)">
+					</div>
+				</form>
+				<h2>Posts</h2>
+				<div id="posts">
+				</div>
+
+			</div>
+			<div class="col-sm-2 sidenav">
+
+			</div>
+		</div>
+	</div>
+	<div class="notification-site">
+		<div class="notification-window">
+			<div class="notification-header">
+				<h1> Notifications</h1>
+				<!--Can add read and unread if have time-->
+			</div>
+			<hr>
+			<div class="notification-main">
+
+				
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+
+		function newPost(x) {
+			var d = new Date();
+			$.post('/createpost', { content: x, time: d.getTime().toString() }).done(
+				//console.log("added new post")
+			);
+			document.getElementById('userpost').value = null;
+			/*
+			document.getElementById('pcontainer').innerHTML = '<p>new paragraph</p>' + document.getElementById('pcontainer').innerHTML;
+			var container = document.getElementById('posts');
+			container.insertBefore(document.createElement("p"), container.firstChild);*/
+
+		}
+
+		function addpostlike(x) {
+			
+			alert("you have liked the post");
+			$.post('/addpostlike', { postid: x.toString() }).done(
+				//console.log("frontend addpostlike done")
+			);
+
+		}
+
+
+		function commentDrop(y) {
+		//this makes sure the comment form opens and closes upon clicking each "comment" button on each post
+			console.log(y);
+			var x = document.getElementById("Demo-" + y);
+			if (x.className.indexOf("w3-show") == (-1))
+				x.className += " w3-show";
+			else
+				x.className = x.className.replace(" w3-show", "");
+		}
+
+
+		function commentAdd(y) {
+			var content = document.getElementById("sing-" + y).value;
+			//console.log(content);
+			$.post('/addcomment', { postid: y.toString(), content: content }).done(
+				//console.log("frontend addcomment done")
+			);
+			document.getElementById("sing-" + y).value = null;
+			commentDrop(y);
+		}
+
+
+		$(window).scroll(function () {
+			if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+				if (reachedBottom == false) {
+					mainScrollDown(3);
+				}
+			}
+		});
+
+
+		var currentPosts = {};
+		var currentComments = {};//key: postid value: 
+		var currentLikes = {};
+		var reachedBottom = false;
+		var addBottom = 0;
+		var refresh_post_time;
+		var earliest_post_time;
+		var postusers = {};
+		var commentusers = [];
+		//const container = document.getElementById('posts');
+
+		$(document).ready(function () {
+			earliest_post_time = new Date().getTime();
+			refresh_post_time = new Date().getTime();
+			mainScrollDown(3);
+			coordFunction(Number.POSITIVE_INFINITY);
+		});
+
+		function coordFunction(ct) {
+			mainUpdate(ct);
+			setTimeout(function () { coordFunction(Number.POSITIVE_INFINITY); }, 10000);
+		}
+
+		const getusername = (userid) => {
+			return new Promise((resolve, reject) => {
+				$.post('/getusernamefromid', { targetuserid: userid }).done(function (data) {
+					console.log(data)
+					var json = JSON.parse(data)
+					resolve(json.username);
+				});
+			});
+		}
+
+		const addPost = (postid, old) => {
+			var postcontent;
+			var postcreator;
+			var posttime;
+			var comments = {};
+			var numlikes;
+			var content;
+			var contentt;
+			const container = document.getElementById('posts');
+			var post = new Object();
+			var time;
+			return new Promise((resolve, reject) => {
+				$.post('/getpost', { postid: postid }).done(function (data) {
+					data = JSON.parse(data);
+					postcontent = data[0].content.S;
+					postcreator = data[0].creator.S;
+					//update the time of the earliest post of the scrolldown or the latest post in the update
+					if (old == false && refresh_post_time < data[0].tsunix.N) {
+						refresh_post_time = data[0].tsunix.N;
+					}
+					if (earliest_post_time > data[0].tsunix.N) {
+						earliest_post_time = data[0].tsunix.N;
+					}
+					time = data[0].tsunix.N / 1000;
+					posttime = timeStampConvert(time);
+					numlikes = data[1];
+					if (data[1].length == 0) {
+						numlikes = 0;
+					}
+					ct = 3;
+					postusers["post-" + postcreator + "-" + postid] = postcreator;
+					//create the inner html for the post
+					content = `
+		              <div class="w3-card-4 w3-margin w3-white" id ="${postid}">
+		                <div class="w3-container">
+		                  <h4 id = "post-${postcreator}-${postid}"><b>${postcreator}</b></h4>
+		                  <h5> <span class="w3-opacity">${posttime}</span></h5>
+		                </div>
+		        
+		                <div class="w3-container">
+		                  <p>${postcontent}</p>
+		                  <div class="w3-row">
+		                    <div class="w3-col m8 s12">
+		                      <div class="w3-dropdown-click">
+		                        <button onclick="commentDrop(\'${postid}\')" class="w3-button w3-padding-large w3-white w3-border"><b>Comment</b></button>
+		                        <div id = "Demo-${postid}" class="w3-dropdown-content w3-card" style="width:450px">
+			                        
+			                          <label>Post</label>
+			                          <input class="w3-input" type="text" id = "sing-${postid}">
+			                          <button type = "button" class="w3-btn w3-blue" onclick ="commentAdd(\'${postid}\')" >Post</button>
+			                        
+		                        </div>
+		                      </div>
+		                    </div>
+		                    <div class="w3-col m4 w3-hide-small">
+		                      <p><span class="w3-padding-large w3-right"><b>Likes </b> <span class="w3-tag" id = "like-${postid}">${numlikes}</span>
+		                      <button type="button" class="btn btn-default btn-sm" onclick="addpostlike(\'${postid}\')">
+		                      <span class="glyphicon glyphicon-thumbs-up"></span>
+		                      </button></span></p>
+		                    </div>
+		                  </div>
+		                </div>
+		              </div>
+		            `;
+
+					post.id = postid;
+					post.likes = numlikes;
+					post.time = time;
+					post.creator = postcreator;
+					//separate situations for comment posts
+					if (data[2].length != 0) {
+						names = [];
+
+						//create a container and using async forloop to add in each comment to the innerHTML
+						contentt = `<div class="w3-container" id = "com-${postid}">`;
+						(async function () {
+							for (j = 0; j < data[2].length; j++) {
+								comments[data[2][j].commentid.S] = data[2][j].content.S;
+								const p = await getusername(data[2][j].creator.S);
+								//console.log(p);
+								contentt = contentt + `
+						<div class="w3-panel w3-card">
+							<h5 >${p} </h5>
+							<p>${timeStampConvert(data[2][j].tsunix.N)}</p>
+							<p>${data[2][j].content.S}</p>
+						</div>
+								`;
+							}
+							contentt = contentt + `</div><br>`;
+
+							if (old == true) {
+								container.innerHTML = container.innerHTML + content + contentt;
+							} else {
+								container.innerHTML = content + contentt + container.innerHTML;
+							}
+
+							//update the post and comments object/dictionary stored on the client side 
+							post.comment = comments;
+							currentComments[postid] = comments;
+							currentPosts[postid] = post;
+							resolve();
+
+						})();
+					} else {
+					//leave a container for future addition of comment
+						contentt = `<div class="w3-container" id = "com-${postid}">`;
+						contentt = contentt + `</div><br>`;
+						if (old == true) {
+							container.innerHTML = container.innerHTML + content + contentt;
+						} else {
+							container.innerHTML = content + contentt + container.innerHTML;
+						}
+
+						post.comment = comments;
+						currentComments[postid] = comments;
+						currentPosts[postid] = post;
+						resolve();
+					}
+
+				});
+			});
+
+		}
+
+
+		var timeStampConvert = function (ts) {
+			//get full timeStamp
+			var dt = new Date();
+			var date = new Date(ts * 1000);
+			var day = date.getDate();
+			var month = date.getMonth() + 1;
+			var year = date.getFullYear();
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			if (hours > 12) {
+				hours -= 12;
+				ampm = "PM";
+			} else {
+				ampm = "AM";
+			}
+			minutes = minutes < 10 ? "0" + minutes : minutes;
+			hours = hours == 0 ? 12 : hours;
+			var time = hours + ":" + minutes + " " + ampm;
+			return month + "/" + day + "/" + year + " " + time;
+		}
+
+
+
+		function mainUpdate(x) {
+			var postids = [];
+			var timestamp;
+			//acquire a list of postid
+			timestamp = refresh_post_time;
+			$.post('/getpostidsforward', { n: x, ts: timestamp }).done(function (data) {
+				data = JSON.parse(data);
+				//console.log("getpostids called, data length: " + data);
+				for (i = 0; i < data.length; i++) {
+					//console.log(data[i].postid.S);
+					postids.push(data[i].postid.S);
+				}
+
+				//call async function to add post individually through a forloop			
+				(async function () {
+					if (postids.length != 0) {
+						for (i = 0; i < postids.length; i++) {
+							const p = await addPost(postids[i], false);
+							//now display the data to main.ejs
+						}
+					}
+
+					//console.log("addpost finished ");
+					const c = await checkUpdate();
+					//console.log("checkupdate() finished ");
+					//refresh_post_time = new Date().getTime();
+				})();
+
+			});
+			//for each post, acquire its contents through postid,save in dictionary key:id
+		}
+
+		function mainScrollDown(x) {
+			var postids = [];
+			var timestamp;
+			//acquire a list of postid
+			timestamp = earliest_post_time;
+			$.post('/getpostids', { n: x, ts: timestamp }).done(function (data) {
+				data = JSON.parse(data);
+				//check if reached bottom
+				if ((data.length == 0)) {
+					reachedBottom = true;
+				}
+				for (i = 0; i < data.length; i++) {
+					//console.log(data[i].postid.S);
+					postids.push(data[i].postid.S);
+				}
+
+				(async function () {
+					if (!reachedBottom) {
+						for (i = 0; i < postids.length; i++) {
+							const p = await addPost(postids[i], true);
+							//now display the data to main.ejs
+						}
+					}
+					const fun = await updateusername();
+					//if reached bottom, disable the scrolling down function and add an HTML element to remind users
+					if (reachedBottom && addBottom == 0) {
+						container = document.getElementById('posts');
+						add = `<div class="w3-left-align"><p>You have reached the bottom of all posts </p></div>`;
+						container.innerHTML = container.innerHTML + add;
+						addBottom = 1;
+					}
+				})();
+
+			});
+		}
+
+
+
+		const checkUpdate = () => {
+			return new Promise((resolve, reject) => {
+				var numlikes;
+				var comments = {};
+				var ids = Object.keys(currentPosts);
+				var curr;
+				
+				(async function () {
+					//check and update individual post's like number and commments 
+					for (i = 0; i < ids.length; i++) {
+						const checklike = await checknumlikes(ids[i]);
+						const checkcom = await checkcomments(ids[i]);
+
+					}
+					//this changes the title headings from unique id to username to avoid info leak
+					const updateuser = await updateusername();
+				})();
+			});
+		}
+		/* this function gets the user's own user name and friends' names, changes the post and comment fields with userid
+		to more secure username
+		*/
+		const updateusername = () => {
+			return new Promise((resolve, reject) => {
+				l = Object.keys(postusers);
+				s = Object.keys(commentusers);
+				var userid = l.map(x => {
+					var t = x.split('-');
+
+					return t[1];
+				});
+				var userid2 = s.map(x => {
+					var t = x.split('-');
+
+					return t[1];
+				});
+				var userids = userid.concat(userid2);
+				$.get('/user', function (element) {
+					userids.push(element);
+					userids = [...new Set(userids)];
+					$.getJSON('/getuserdetailsall', { ids: userids }, function (data) {
+						for (var i = 0; i < l.length; i++) {
+							var usid = l[i].split('-')[1];
+							var usname = data.filter(x => { return x.userid.S == usid });
+							if (usname != null) {
+								usname = usname[0].username.S;
+							}
+							document.getElementById(l[i]).innerText = usname;
+						}
+						for (var i = 0; i < s.length; i++) {
+							var usid = s[i].split('-')[1];
+							var usname = data.filter(x => { return x.userid.S == usid });
+							if (usname != null) {
+								usname = usname[0].username.S;
+							}
+							document.getElementById(s[i]).innerText = usname;
+						}
+						resolve('success');
+					});
+				});
+			});
+		}
+
+		const checknumlikes = (postid) => {
+			return new Promise((resolve, reject) => {
+				$.post('/getpostlikesnumber', { postid: postid }).done(function (data) {
+					data = JSON.parse(data);
+					//console.log("checking numlikes for postid: "+postid);
+					var numlikes;
+					if (typeof data === "undefined") {
+						numlikes = 0;
+					} else {
+						numlikes = data;
+					}
+					// console.log("checkupdate -numlikes: " + numlikes);
+					// console.log("checkupdate - currPostlikes: " + currentPosts[ids[curr]]);
+					if (currentPosts[postid].likes != numlikes) {
+						document.getElementById("like-" + postid).innerHTML = numlikes;
+						currentPosts[postid].likes = numlikes;
+					}
+					resolve();
+				});
+			});
+		}
+		const checkcomments = (postid) => {
+			ct = Number.POSITIVE_INFINITY;
+
+			return new Promise((resolve, reject) => {
+				$.post('/getcomments', { postid: postid, ts: refresh_post_time, n: ct }).done(function (data) {
+					//console.log("checkcomments called");
+					comments = {};
+					data = JSON.parse(data);
+					// console.log("checkupdate comments: " + data.length);
+					for (j = 0; j < data.length; j++) {
+						comments[data[j].commentid.S] = data[j];
+					}
+					toupdate = currentComments[postid];//toupdate is a dictionary - key: commentid; value: comment object
+					var toadd = {};
+					if (Object.keys(comments).length != 0) {
+						if (toupdate != undefined && Object.keys(comments).length != Object.keys(toupdate).length) {
+							//console.log("check comments difference detected");
+							Object.entries(comments).forEach(([key, value]) => {
+								if (!(key in toupdate)) {
+									// console.log("new key added");
+									toadd[key] = value;
+									currentComments[postid][key] = value;
+								}
+							});
+						} else if (toupdate != undefined && Object.keys(comments).length == Object.keys(toupdate).length) {
+							//	console.log("do nothing");
+						} else {
+							currentComments[postid] = {};
+							Object.entries(comments).forEach(([key, value]) => {
+								toadd[key] = value;
+								currentComments[postid][key] = value;
+							});
+						}
+						//console.log("checkupdate comments changed size: " + Object.keys(toadd).length);
+					}
+					//now update the innerHTML of specific post
+					var container = document.getElementById('com-' + postid);
+					var newcontent = "";
+					Object.entries(toadd).forEach(([key, value]) => {
+						commentusers["comuser-" + value.creator.S + "-" + key] = value.creator.S;
+						newcontent = newcontent + `
+					<div class="w3-panel w3-card">
+							<h5 id = "comuser-${value.creator.S}-${key}">${key} </h5>
+							<p>${new Date(value.tsunix.N * 1000)}</p>
+							<p>${value.content.S}</p>
+					</div>
+			            `;
+					});
+					container.innerHTML = newcontent + container.innerHTML;
+					currentComments[postid] = comments;
+					resolve();
+				});
+			});
+		}
+
+
+
+
+
+
+	</script>
+
+</body>
+
+</html>

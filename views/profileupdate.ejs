@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profile Update</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+	 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+      height: 80px;
+    }
+
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {
+      height: 700px
+    }
+
+    .navbar .navbar-brand img {
+      height: 40px;
+    }
+
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+
+    .navbar-form {
+      vertical-align: middle;
+      height: 45px;
+    }
+
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+
+      .row.content {
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <nav class="navbar  class=" navbar navbar-light" style="background-color: #e3f2fd;">
+    <div class="container-fluid">
+      <a href="/main" class="navbar-brand">
+        <img src="owl.png">
+      </a>
+      <a href="/main" class="btn btn-primary btn-md" role="button" style = "margin-top:20px;" >Home</a>
+    </div>
+  </nav>
+
+  <h3 class='text-center' style="margin-top:20px">Profile Update </h3>
+  <div class="row g-3" >
+    <div class="container">
+      <div class="row justify-content-center" style="margin-top:20px">
+        <div class="col-md-3">
+          <label for="newemail" class="form-label">New Email</label>
+          <input id="newemail" onchange = "validateEmail()" >
+        </div>
+        <div class="col-md-3" >
+            <button class="btn btn-primary" onclick="changeMail()"> Change Email</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="row g-3" >
+    <div class="container">
+      <div class="row justify-content-center" style="margin-top:20px">
+        <div class="col-md-2">
+          <label for="oldpassword" >Old Password</label>
+          <input type = "password" id ="oldpassword">
+        </div>
+        <div class="col-md-2">
+          <label for="newpassword">New Password</label>
+          <input type = "password" id ="newpassword">
+        </div>
+        <div class="col-md-2" style="margin-top:20px">
+          <button  class="btn btn-primary" onclick="changePassword()">Change Password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="row g-3" >
+      <div class="container">
+        <div class="row justify-content-center" style="margin-top:20px">
+          <div class="col-3">
+            <label for="inputState" class="form-label">Affiliation</label>
+            <select class="form-select" id="newaffiliation">
+              <option disabled selected>Choose...</option>
+              <option>College</option>
+              <option>NETS212</option>
+              <option>Wharton</option>
+              <option>Engineering</option>
+              <option>Nursing</option>
+              <option>Law</option>
+              <option>Medicine</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="col-md-3" style="margin-top:30px">
+              <button  class="btn btn-primary" onclick="changeAffiliation()"> Change Affiliation</button>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+
+  <div class="row g-3">
+    <div class = "container">
+      <div class="row justify-content-center" style="margin-top:20px">
+        <div class="col-6">
+          <label class="mdb-main-label" style="margin-bottom:10px;">Choose your new interests</label><br>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input"  type="checkbox" id="Entertainment" />
+            <label class="form-check-label" for="Entertainment">Entertainment</label>
+          </div>
+          
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Politics"  />
+            <label class="form-check-label" for="Politics">Politics</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="World News"  />
+            <label class="form-check-label" for="World News">World News</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Sports"  />
+            <label class="form-check-label" for="Sports">Sports</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Business"/>
+            <label class="form-check-label" for="Business">Business</label>
+          </div>
+          
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Science" />
+            <label class="form-check-label" for="Science">Science</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Tech" />
+            <label class="form-check-label" for="Tech">Tech</label>
+          </div>
+          
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Style & Beauty" />
+            <label class="form-check-label" for="Style & Beauty">Style & Beauty</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Style"/>
+            <label class="form-check-label" for="Style">Style</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Comedy" />
+            <label class="form-check-label" for="Comedy">Comedy</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Women" />
+            <label class="form-check-label" for="Women">Women</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Impact" />
+            <label class="form-check-label" for="Impact">Impact</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Arts" />
+            <label class="form-check-label" for="Arts">Arts</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Arts & Culture" />
+            <label class="form-check-label" for="Arts & Culture">Arts & Culture</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Media"/>
+            <label class="form-check-label" for="Media">Media</label>
+          </div>
+        
+      
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Queer Voices" />
+            <label class="form-check-label" for="Queer Voices">Queer Voices</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Latino Voices" />
+            <label class="form-check-label" for="Latino Voices">Latino Voices</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Black Voices"  />
+            <label class="form-check-label" for="Black Voices">Black Voices</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Wellness" />
+            <label class="form-check-label" for="Wellness">Wellness</label>
+          </div>
+          
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Healthy Living"  />
+            <label class="form-check-label" for="Healthy Living">Healthy Living</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Parenting"  />
+            <label class="form-check-label" for="Parenting">Parenting</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Taste" />
+            <label class="form-check-label" for="Taste">Taste</label>
+          </div>
+          
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Food & Drink" />
+            <label class="form-check-label" for="Food & Drink">Food & Drink</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Worldpost"/>
+            <label class="form-check-label" for="Worldpost">Worldpost</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Travel"  />
+            <label class="form-check-label" for="Travel">Travel</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Home & Living"  />
+            <label class="form-check-label" for="Home & Living">Home & Living</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Green"  />
+            <label class="form-check-label" for="Green">Green</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Weddings"  />
+            <label class="form-check-label" for="Weddings">Weddings</label>
+          </div>
+          
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Divorce"  />
+            <label class="form-check-label" for="Divorce">Divorce</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Parents"  />
+            <label class="form-check-label" for="Parents">Parents</label>
+          </div>
+
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Crime" />
+            <label class="form-check-label" for="Crime">Crime</label>
+          </div>
+          
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Weird News"  />
+            <label class="form-check-label" for="Weird News">Weird News</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Fifty"  />
+            <label class="form-check-label" for="Fifty">Fifty</label>
+          </div>
+
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="College"  />
+            <label class="form-check-label" for="College">College</label>
+          </div>
+          
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Education"  />
+            <label class="form-check-label" for="Education">Education</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="Religion" />
+            <label class="form-check-label" for="Religion">Religion</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class = "container" >
+      <div class="d-grid gap-2 col-6 mx-auto" style="margin-top:10px">
+        <button type="submit" class="btn btn-primary" onclick="changeInterest()">Change Interest</button>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    
+    function changeInterest(){
+    //before submission check how many interests are selected
+        ct = 0;
+        names = ["Entertainment","Politics","World News","Sports","Business","Science","Tech","Style & Beauty","Style",
+              "Comedy","Women","Impact","Arts","Arts & Culture","Media","Queer Voices","Latino Voices","Black Voices",
+              "Wellness","Healthy Living","Parenting","Taste","Weddings","Divorce","Education","College","Parents","Fifty",
+              "Weird News","Crime", "Green", "Religion", "Home & Living", "Food & Drink", "Worldpost", "Travel"];
+        //console.log(names.length);
+        interests = [];
+        for (i = 0; i < names.length;i++){
+          document.getElementById(names[i]).setAttribute("name",names[i]);
+          if(document.getElementById(names[i]).checked){
+            ct += 1;
+            document.getElementById(names[i]).value = "checked";
+            interests.push(names[i].toUpperCase());
+          }
+        }
+        if (ct < 2){
+          alert("less than two interests selected");
+        } else{
+        //make ajax call to add the updated interest
+            $.post('/updateinterests',{interests:interests}).done(function(data){
+                console.log(data);
+                if(data =="success"){
+                  for (i = 0; i < names.length;i++){
+                    document.getElementById(names[i]).checked = false;
+                  }
+                }else{
+                  alert("some error");
+                }
+            });
+        }
+    }
+    
+
+    function changePassword(){
+        var newpass = document.getElementById('newpassword').value;
+        var oldpass = document.getElementById('oldpassword').value;
+        //alert("changepass called"+ oldpass+";"+newpass);
+        $.post('/updatepassword',{oldpassword: oldpass, newpassword: newpass},function(data){
+          console.log(data);
+          if(data =="success"){
+            alert("password changed");
+          } else{
+            alert("incorrect old password");
+          }
+          document.getElementById('newpassword').value='';
+        document.getElementById('oldpassword').value='';
+
+        });
+
+    }
+
+
+
+    function changeMail(){
+        var newemail = document.getElementById('newemail').value;
+        //alert("called"+newemail);
+        $.post('/updateemail',{email:newemail},function(data) {
+          if(data=="success"){
+            alert("email changed");
+          } else{
+            alert("some error");
+          }
+          document.getElementById('newemail').value='';
+         });
+    }
+
+
+    function changeAffiliation(){
+        var newaff = document.getElementById('newaffiliation').value;
+        var content = "";
+        $.post('/updateaff',{affiliation:newaff}).done(function(data){
+          if(data=="success"){
+            alert("affiliation changed");
+          } else{
+            alert("some error");
+          }
+        });
+        document.getElementById('newaffiliation').value  = '';
+        
+    }
+    
+    function validateEmail() {
+      //console.log("event detected");
+      var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      if(!document.getElementById('newemail').value.match(mailformat)){
+        alert("You have entered an invalid email address!");
+        document.getElementById('newemail').value ='';
+      }
+    }
+    </script>
+
+</body>
+</html>

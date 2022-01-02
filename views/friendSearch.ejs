@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+	<!-- navigation files -->
+	<link type="text/css" href="../css/nav.css" rel="stylesheet" />
+	<script language="javascript" type="text/javascript" src="../js/notification.js"></script>
+	<style>
+		.friend-list {
+			margin: -1px;
+			list-style-type: none;
+		}
+
+		.friend-list .friend-img img {
+			max-width: 100%;
+		}
+
+		.friend-list {
+			padding: 0;
+		}
+
+		.friend-list>li {
+			float: left;
+			width: 100%;
+		}
+
+		.friend-list>li>a {
+			display: block;
+			text-decoration: none;
+			color: #000;
+			padding: 0.625rem;
+			margin: 1px;
+			background: #fff;
+		}
+
+		.friend-list>li>a:after,
+		.friend-list>li>a:before {
+			content: "";
+			display: table;
+			clear: both;
+		}
+
+		.friend-list .friend-img {
+			float: left;
+			width: 4rem;
+			height: 4rem;
+			overflow: hidden;
+			background: #efeff4;
+		}
+
+		.friend-list .friend-info {
+			margin-left: 3.625rem;
+		}
+
+		.friend-list .friend-info h4 {
+			margin: 0.3125rem 0;
+			font-size: 0.875rem;
+			font-weight: 600;
+		}
+
+		.friend-list .friend-info p {
+			color: #666;
+			margin: 0;
+		}
+
+		.btn-primary {
+			display: inline;
+			zIndex: 100;
+		}
+
+		.onlinedot {
+			height: 0.5rem;
+			width: 0.5rem;
+			background-color: #0c0;
+			border-radius: 50%;
+			display: inline-block;
+		}
+
+		.offlinedot {
+			height: 0.5rem;
+			width: 0.5rem;
+			background-color: #bbb;
+			border-radius: 50%;
+			display: inline-block;
+		}
+	</style>
+	<script type="text/javascript">
+
+		var usernames = []
+		var fullnames = []
+		var userDetails
+		var friends = []
+		var results = 0
+
+		var getSpecificFriend = function (username) {
+			$.post("/friends/search/specific", { username: username }, function (data, status) {
+				if (status == "success") {
+					json = JSON.parse(data);
+					if (!usernames.includes(username)) {
+						results += 1
+						if (!friends.includes(json[0].userid.S)) {
+							var button = `<button class="btn btn-primary" id="send request` + json[0].userid.S + `">Send Friend Request</button>`
+						} else {
+							var button = ""
+						}
+						var dot;
+						if (json[0].status == undefined) {
+							var status = "Offline"
+						} else {
+							var status = json[0].status.S
+						}
+						if (status == "Online") {
+							dot = `<span class="onlinedot"></span>`
+						} else {
+							dot = `<span class="offlinedot"></span>`
+						}
+						var picture
+						if (json[0].picture == undefined) {
+							picture = "../owl.png"
+						} else {
+							picture = "../owl" +  json[0].picture.S + ".png"
+						}
+						$("#number-matches").html("Results: " + results)
+						$("#friends-list").append(
+							`<li>
+		            <a href="../user/` + json[0].username.S + `">
+		                <div class="friend-img"><img src="` + picture + `" alt="" /></div>
+		            </a>
+		                <div class="friend-info">
+		                    <h4>` + dot + "   " + json[0].username.S + `</h4>
+		                    <p>Name: ` + json[0].firstname.S + " " + json[0].lastname.S + `</p>
+		                    <p>Affiliation: ` + json[0].affiliation.S + `</p>
+							` + button + `
+		                </div>
+		            
+		        </li>`)
+					}
+				}
+			}).fail(function () {
+				console.log('error');
+			});
+		}
+
+		var getPossibleFriends = function () {
+			$.get("/friends/search/fetch", function (data, status) {
+				if (status == "success") {
+					json = JSON.parse(data);
+					userDetails = json.details
+					for (var i = 0; i < json.friends.length; i++) {
+						friends.push(json.friends[i].useridfriend.S)
+					}
+					for (var i = 0; i < userDetails.length; i++) {
+						usernames.push(userDetails[i][0].username.S)
+						fullnames.push(userDetails[i][0].firstname.S + " " + userDetails[i][0].lastname.S)
+						userDetails[i][0].fullname = fullnames[i]
+					}
+					$('#friend-search').autocomplete({
+						source: usernames
+					})
+					$('#friend-search').autocomplete({
+						source: fullnames
+					})
+				}
+			}).fail(function () {
+				console.log('error');
+			});
+		}
+
+
+		var getMatches = function (substring) {
+			var matches = []
+			if (userDetails != undefined) {
+			for (var i = 0; i < userDetails.length; i++) {
+				if (userDetails[i][0].username.S.indexOf(substring) >= 0 || userDetails[i][0].fullname.indexOf(substring) >= 0) {
+					matches.push(userDetails[i])
+				}
+			}
+			
+			}
+			return matches
+		}
+
+		$(document).ready(function () {
+			getPossibleFriends()
+			$('#friend-search-button').click(function () {
+				var substring = $('#friend-search').val()
+				var matches = getMatches(substring)
+				results = matches.length
+				$("#number-matches").html("Results: " + results)
+				$("#friends-list").html("")
+				for (var i = 0; i < matches.length; i++) {
+
+					var dot;
+					if (matches[i][0].status == undefined) {
+						var status = "Offline"
+					} else {
+						var status = matches[i][0].status.S
+					}
+					if (status == "Online") {
+						dot = `<span class="onlinedot"></span>`
+					} else {
+						dot = `<span class="offlinedot"></span>`
+					}
+
+					if (!friends.includes(matches[i][0].userid.S)) {
+						var button = `<button class="btn btn-primary" id="send request` + matches[i][0].userid.S + `">Send Friend Request</button>`
+					} else {
+						var button = ""
+					}
+					var picture
+					if (matches[i][0].picture == undefined) {
+						picture = "../owl.png"
+					} else {
+						picture = "../owl" +  matches[i][0].picture.S + ".png"
+					}
+					//add to friends list
+					$("#friends-list").append(
+						`<li>
+		            <a href="../user/` + matches[i][0].username.S + `">
+		                <div class="friend-img"><img src="` + picture + `" alt="" /></div>
+		            </a>
+		                <div class="friend-info">
+		                    <h4>` + dot + "  " + matches[i][0].username.S + `</h4>
+		                    <p>Name: ` + matches[i][0].firstname.S + " " + matches[i][0].lastname.S + `</p>
+		                    <p>Affiliation: ` + matches[i][0].affiliation.S + `</p>
+							` + button + `
+		                </div>
+		            
+		        </li>`)
+				}
+				if ($('#friend-search').val() != "") {
+					getSpecificFriend($('#friend-search').val())
+				}
+			})
+			$("#friends-list").on("click", "button", function () {
+				var userid = $(this).attr("id").split("send request")[1];
+				var button = this
+				$.post("/friends/request", { frienduserid: userid }, function (data, status) {
+					if (status == "success") {
+						json = JSON.parse(data);
+						$(button).toggle()
+						$(button).parent().append(json)
+					}
+				});
+			})
+		});
+
+	</script>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+		<div class="container-fluid">
+			<a href="/main" class="navbar-brand">
+				<img src="owl.png">
+			</a>
+			<a href="/friends/search" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Search
+				Friends</a>
+			<a href="/news/search" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Search News</a>
+			<a href="/visualizer" class="btn btn-primary btn-md" role="button" style="margin-top:20px;">Visualizer</a>
+			<ul class="nav navbar-nav navbar-right" style="margin-top:20px;">
+				<li><a href="/main"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+				<li><a href="/ownwall"><span class="glyphicon glyphicon-bookmark"></span>Wall</a></li>
+				<li><a href="/friends"><span class="glyphicon glyphicon-heart"></span>Friends</a></li>
+				<li><a href="/chat"><span class="glyphicon glyphicon-comment"></span>Chats</a></li>
+				<li><a href="/news"><span class="glyphicon glyphicon-blackboard"></span>News</a></li>
+				<li><a href="/userdetails"><span class="glyphicon glyphicon-user"></span>Profile</a></li>
+				<li class="notification-trigger"><a><span class="glyphicon glyphicon-bell"></span>Notification</a> </li>
+				<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="row row-space-20">
+		<div class="col-md-6">
+			<div class="tab-content p-0">
+				<div class="input-group">
+					<div class="ui-widget">
+						<input id="friend-search" type="text" placeholder="Search" name="friend-search">
+						<button class="btn btn-default" id="friend-search-button"> Search </button>
+					</div>
+				</div>
+				<div class="tab-pane active show" id="profile-friends">
+					<div class="m-b-20"><b id="number-matches">People Search</b></div>
+					<ul class="friend-list clearfix" id='friends-list'>
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="notification-site">
+		<div class="notification-window">
+			<div class="notification-header">
+				<h1> Notifications</h1>
+				<!--Can add read and unread if have time-->
+			</div>
+			<hr>
+			<div class="notification-main">
+				<div class="notification-block">
+					<div>
+						<img src="owl.png" />
+					</div>
+					<div class="notification-content chatRequest">
+						<div class="notification-content-name">Gary Chen blablablablablablaljijij</div>
+						<div class="notification-content-msg-block">
+							<div class="notification-content-msg">invites you to chat + names</div>
+							<div class="notification-content-msg-date">Monday</div>
+						</div>
+					</div>
+					<div class="unseen-icon">
+						<i class="fas fa-circle fa-xs" style="color:#01FEFA !important"></i>
+					</div>
+					<div class="break"></div>
+					<div class="notification-button-menu">
+						<div class="notification-button accept-notification">
+							<i class="far fa-check-circle">Accept</i>
+						</div>
+						<div class="notification-button reject-notification">
+							<i class="far fa-times-circle">Reject</i>
+						</div>
+					</div>
+				</div>
+				<div class="notification-block">
+					<div>
+						<img src="owl.png" />
+					</div>
+					<div class="notification-content friendRequest">
+						<div class="notification-content-name">Gary Chen blablablablablablaljijij</div>
+						<div class="notification-content-msg-block">
+							<div class="notification-content-msg">Want to be your friend</div>
+							<div class="notification-content-msg-date">Monday</div>
+						</div>
+					</div>
+					<div class="unseen-icon">
+						<i class="fas fa-circle fa-xs"></i>
+					</div>
+					<div class="break"></div>
+					<div class="notification-button-menu">
+						<div class="notification-button accept-notification">
+							<i class="far fa-check-circle">Accept</i>
+						</div>
+						<div class="notification-button reject-notification">
+							<i class="far fa-times-circle">Reject</i>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+
+</html>
