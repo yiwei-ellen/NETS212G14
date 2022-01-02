@@ -1,0 +1,148 @@
+WhoPenn - README
+
+1) Full Names and SEAS Login Names of All Team Members
+
+Josh Ludan - jludan
+Hanxi (Gary) Chen - hanxic
+Yiwei (Ellen) Yan - eyan2024
+Yuxuan (Michael) Gao - gaoyx
+
+
+ 2) Features Implemented
+
+We implemented all features required on the project handout. Specifically, we have:
+
+User Registration
+a. Signup with login name, password, first and last name, email address, an affiliation, a birthday, and at least 2 news categories.
+b. Emails address is validated through Regex.
+c. Names all go through sanity check (no non-alphanumeric input).
+d. On making the user, the backend assigns him with a random owl profile picture. 
+
+Account Changes
+a. Users change affiliation, interests, email, and password through different buttons.
+b. On the success of changing, the user gets an alert.
+c. When changing affiliation and interest, the user automatically makes a post to his own wall.
+
+Walls
+a. Each user accesses their own wall through the “wall” button on the main page after they log in.
+b. Each user can go to their friend list and visit their friend’s wall by clicking on the friend’s username.
+c. Users can post on their main page, their own wall, and their friend’s wall. When users post on a friend’s wall, they make a post to the destination represented by the friend’s userid.
+
+Home Page 
+a. On the navigation bar, the user should be able to access the friend search page, news search page, visualizer from the buttons on the left.
+b. On the right of the navigation bar, the user is able to access news, chatroom, friend list, profile update, notifications (friend request and chat invites), and logout.
+c. Status updates for profile change and friendship are shown as posts for each user.
+
+Comments
+a. The user can post, comment, and like on any page they can visit. Any change will show up in around 10 seconds. 
+b. All comments for any post show up at once after loading each post.
+
+Search
+a. The autocomplete function for friends search suggests friends and friends of friends.
+b. The news search function returns in terms of how many substrings match with the article titles and then their weight in the graph.
+
+Friends
+a. User can request to add friend, and once accepted by the friend, add bidirectional edges and a friendship post for both users. Requests can be rejected, after which no friendship is formed.
+b. Users can edit to remove friends by visiting the friend list from the main page.
+c. Users can see who among their friends are online.
+
+Visualizer
+a. First show direct friends.
+b. When clicked on connected users, only show friends of friends who are in the same affiliation with the user.
+
+Chat
+a. Chat requests and approval is required before users can start chatting. Notifications are on the navigation bar, click to check the requests and updates. 
+b. Users can leave the chat and change the chat name.
+c. User can invite online friends to chat.
+d. Messages in chat sessions are ordered consistently in reverse chronological order.
+e. Users can invite a new friend to an ongoing chat, creating a new group chat if needed.
+f. Users with pre-existing chat records go to the old chat session upon creating a repeated chat room.
+
+News Feeds
+a. Spark is run every hour to update the weights on users, interests and articles, and their likes.
+b. For edge cases of users with no friends or no article likes, the website display articles based on the interest categories selected and generates recommendations from a uniform distribution within each category.
+
+Security and Scalability
+a. Password salted and hashed with SHA256.
+b. Making sanity check and generating unique id for each user upon account creation.
+c. DynamoDB and EC2 allow the project to be scalable. Some of our tables are provisioned and some are scaled. In the case of a demand spike, we will get notifications that will inform us when we need to provision more for a given table.
+d. Most routes only work if a user is currently logged in with a cookie. Users who are not in a session are always redirected to the login page. 
+e. A pending notification table is made to prevent illegal request sent from the third party
+
+ 
+ 3) Extra Credits Claimed
+
+a. Infinite scrolling - our main page, wall, and news pages all support infinite scrolling as a form of pagination.
+b. Friend requests - users can send each other friend requests through the friend search page. Users can respond to these requests by denying/accepting them on the notifications bar.
+c. Friend deletion - users can manage their friends on their friends page.
+d. Notifications - users get notifications for major interactions (i.e friend requests) on their notifications bar. 
+e. Profile picture - generated on setup
+f. Comprehensive chat features - kick users, change chat name, no redundant chat room creation
+g. Sanitization - username, first name, and last name will need to be alphanumeric and appropriate during creation, otherwise, the user will be required to pick a new set of names
+ 
+
+ 4) Source Files List
+
+ /models
+ 	ComputeRecLivy.java
+ 	database.js
+ 	RecJob.java
+	nets212-hw3-0.0.1-SNAPSHOT.jar
+	databaseTest.js
+ /news_loader
+ 	newsInvertedIndexLoader.js
+ 	newsLoader.js
+ 	nlp_en_stop_words.txt
+	.classpath
+	.gitignore
+	.project
+ /public
+	/CSS
+		base.css
+		nav.css
+	/js
+		friendvisualizer.js
+		jit.js
+		notification.js
+	15 different owl pics
+	.DS_store
+ /routes
+	routes.js
+ /views
+	chat.ejs
+	friends.ejs
+	friendSearch.ejs
+	friendvisualizer.ejs
+	friendwall.ejs
+	login.ejs
+	main.ejs
+	news.ejs
+	ne0-p'wsSearch.ejs
+	ownwall.ejs
+ 	profileupdate.ejs
+signup.ejs
+pom.xml
+package.json
+app.js
+README
+owl.png
+Package-lock.json
+AdsorptionBackup.zip
+/.settings
+.gitignore
+.project
+
+
+ 5) Integrity Declaration
+
+All of the code is written collaboratively by Josh Ludan, Hanxi Chen, Yuxuan Gao, and Yiwei Yan. No code is directly copied from the internet or other sources.
+ 
+
+
+ 6) Instructions for Building and Running Project
+
+a. Run “npm install”
+b. Create DynamoDB tables using the schema specified in the following document: https://docs.google.com/document/d/1lIz5r53lithY_15OT57tuzTWUy8FGvXc7KFtH8hggeY/edit?usp=sharing
+c. Run “node app.js”
+d. Adsorption: adsorption is hosted in the file \models\ComputeRecLivy.java - run the file to start adsorption. If the files don’t work due to configuration issues, please import AdsorptionBackup.zip as a separate project. Then, run ComputeRecLivy.java in the src/main/java/edu.upenn.cis.nets212.hw3.livy directory separately to conduct adsorption updates (using the Java environment from Homework 3.)
+
